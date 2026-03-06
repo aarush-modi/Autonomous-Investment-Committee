@@ -1,0 +1,24 @@
+.env
+.DS_Store
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+
+# Virtual environments
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# Data and reports output
+data/reports/
+
+# ChromaDB local storage
+chroma_data/
