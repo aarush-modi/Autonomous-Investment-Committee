@@ -1,15 +1,11 @@
 def _python_type_to_json(python_type):
-    match python_type:
-        case str:
-            return "string"
-        case int:
-            return "integer"
-        case float:
-            return "number"
-        case bool:
-            return "boolean"
-        case _:
-            return "string"
+    type_map = {
+        str: "string",
+        int: "integer",
+        float: "number",
+        bool: "boolean",
+    }
+    return type_map.get(python_type, "string")
 
 def tool (description: str):
     def decorator(func):
