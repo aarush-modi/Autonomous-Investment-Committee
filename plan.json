@@ -212,5 +212,84 @@
   "phase1_deliverable": {
     "command": "python scripts/run_committee.py --ticker NVDA --hypothesis \"Evaluate NVDA as a long position given AI infrastructure demand growth\" --output data/reports/nvda_analysis.md",
     "output": "Multi-section investment memo with market data analysis, fundamental research from SEC filings, basic risk metrics, economic context, and a synthesized Buy/Sell/Hold recommendation with conviction level."
-  }
+  },
+  "phase2_steps": [
+    {
+      "step": 9,
+      "title": "Async Parallel Agents",
+      "status": "pending",
+      "files": ["src/core/agent.py", "src/core/orchestrator.py", "src/agents/committee_chair.py"],
+      "description": "Convert BaseAgent to async, run sub-agents in parallel using asyncio.gather when they have no dependencies. Significantly reduces end-to-end latency.",
+      "key_concepts": [
+        "async/await with Anthropic async client",
+        "asyncio.gather for parallel agent execution",
+        "Dependency graph: which agents can run concurrently",
+        "Async tool execution"
+      ]
+    },
+    {
+      "step": 10,
+      "title": "Cache Integration",
+      "status": "pending",
+      "files": ["src/data/providers/yahoo.py", "src/data/providers/fred.py", "src/data/providers/edgar.py", "src/data/cache.py"],
+      "description": "Wire the existing SQLite cache into all data providers. Cache API responses with configurable TTL to reduce latency and respect rate limits.",
+      "key_concepts": [
+        "Decorator-based caching for provider methods",
+        "Configurable TTL per data type (quotes shorter, filings longer)",
+        "Cache invalidation strategies"
+      ]
+    },
+    {
+      "step": 11,
+      "title": "Backtesting Engine",
+      "status": "pending",
+      "files": ["src/tools/analysis/backtesting.py", "src/agents/quant_analyst.py"],
+      "description": "Build a backtesting engine that tests investment strategies against historical data. Integrate as a tool for the Quant Analyst agent.",
+      "key_concepts": [
+        "Strategy definition (entry/exit rules)",
+        "Historical simulation with transaction costs",
+        "Performance metrics: total return, max drawdown, win rate",
+        "Avoid look-ahead bias"
+      ]
+    },
+    {
+      "step": 12,
+      "title": "Signal Generation",
+      "status": "pending",
+      "files": ["src/signals/generator.py", "src/signals/indicators.py", "src/signals/alerts.py"],
+      "description": "Automated signal generation based on technical indicators and agent outputs. Trigger alerts when conditions are met (e.g. RSI below 30, unusual volume).",
+      "key_concepts": [
+        "Technical indicators: RSI, MACD, Bollinger Bands",
+        "Threshold-based alert triggers",
+        "Signal scoring and prioritization",
+        "Scheduled monitoring via cron or background tasks"
+      ]
+    },
+    {
+      "step": 13,
+      "title": "Portfolio Construction",
+      "status": "pending",
+      "files": ["src/portfolio/optimizer.py", "src/portfolio/allocator.py", "src/portfolio/constraints.py", "src/agents/portfolio_manager.py"],
+      "description": "Move beyond single stock analysis to full portfolio optimization. Build a Portfolio Manager agent that considers correlations, risk budget, and position sizing.",
+      "key_concepts": [
+        "Mean-variance optimization (Markowitz)",
+        "Risk parity allocation",
+        "Position sizing based on conviction and risk budget",
+        "Sector and concentration constraints"
+      ]
+    },
+    {
+      "step": 14,
+      "title": "Streaming Data & Live Monitoring",
+      "status": "pending",
+      "files": ["src/data/streaming.py", "src/pipeline/monitor.py"],
+      "description": "Add real-time or near-real-time data feeds. Build a monitoring pipeline that continuously watches positions and triggers re-evaluation when market conditions change.",
+      "key_concepts": [
+        "WebSocket or polling-based data feeds",
+        "Event-driven agent triggers",
+        "Position monitoring with stop-loss/take-profit alerts",
+        "Dashboard integration"
+      ]
+    }
+  ]
 }
