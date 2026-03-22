@@ -31,6 +31,7 @@ class CommitteeOrchestrator:
         result = chair.run(AgentMessage(content=hypothesis, sender="user"))
         return {
             "recommendation": result.content,
+            "agent_outputs": chair.get_agent_outputs(),
             "success": result.success,
         }
 

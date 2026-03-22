@@ -20,6 +20,9 @@ AGENTS = {
 }
 
 
+agent_outputs = {}
+
+
 @tool("Delegates a query to a specialist agent. Agent names: Market Data, Research Analyst, Alternative Data, Quant Analyst, Risk Manager")
 def delegate_to_agent(agent_name: str, query: str) -> str:
     if agent_name not in AGENTS:
@@ -27,6 +30,7 @@ def delegate_to_agent(agent_name: str, query: str) -> str:
 
     agent = AGENTS[agent_name]()
     result = agent.run(AgentMessage(content=query, sender="Committee Chair"))
+    agent_outputs[agent_name] = result.content
     return f"[{agent_name}]:\n{result.content}"
 
 
@@ -40,3 +44,6 @@ class CommitteeChairAgent(BaseAgent):
             max_tokens=4096,
             temperature=0,
         )
+
+    def get_agent_outputs(self) -> dict:
+        return dict(agent_outputs)

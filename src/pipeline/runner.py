@@ -21,17 +21,17 @@ def run_committee(ticker: str, thesis: str, output_path: str):
 
     print("\nGenerating report...")
     gen = ReportGenerator()
-    report = gen.generate_investment_memo(hypothesis.ticker, {
-        "summary": result["recommendation"],
-        "market_data": "",
-        "fundamentals": "",
-        "economic_context": "",
-        "quant_analysis": "",
-        "risk_assessment": "",
-        "recommendation": "",
-        "conviction": "",
-        "reasoning": result["recommendation"],
-    })
+    agent_outputs = result.get("agent_outputs", {})
+
+    report = gen.generate_committee_decision(
+        ticker=hypothesis.ticker,
+        hypothesis=hypothesis.thesis,
+        agent_outputs=agent_outputs,
+        chair_synthesis=result["recommendation"],
+        recommendation="See Chair's synthesis above",
+        conviction="See Chair's synthesis above",
+        reasoning="",
+    )
 
     gen.save(report, output_path)
     print(f"Report saved to {output_path}")
