@@ -22,3 +22,7 @@ data/reports/
 
 # ChromaDB local storage
 chroma_data/
+data/vectorstore/
+
+# Cache
+cache.db
