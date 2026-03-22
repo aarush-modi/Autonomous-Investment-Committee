@@ -1,0 +1,219 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Investment Committee Decision — {{ ticker }}</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Georgia', 'Times New Roman', serif;
+            background: #f8f9fa;
+            color: #2c3e50;
+            line-height: 1.7;
+        }
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            background: #fff;
+            box-shadow: 0 2px 20px rgba(0,0,0,0.08);
+            border-radius: 4px;
+        }
+        .header {
+            background: #1a2332;
+            color: #fff;
+            padding: 40px 50px;
+            border-radius: 4px 4px 0 0;
+        }
+        .header h1 {
+            font-size: 28px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+        }
+        .header .meta {
+            font-size: 14px;
+            color: #8899aa;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .hypothesis-bar {
+            background: #f0f3f7;
+            padding: 20px 50px;
+            border-bottom: 1px solid #e1e5ea;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 15px;
+        }
+        .hypothesis-bar strong { color: #1a2332; }
+        .content { padding: 40px 50px; }
+        .section {
+            margin-bottom: 35px;
+        }
+        .section-title {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            color: #7f8c9b;
+            border-bottom: 2px solid #e1e5ea;
+            padding-bottom: 8px;
+            margin-bottom: 18px;
+        }
+        .agent-card {
+            background: #fafbfc;
+            border: 1px solid #e8ecf0;
+            border-left: 3px solid #3498db;
+            border-radius: 3px;
+            padding: 20px 24px;
+            margin-bottom: 16px;
+        }
+        .agent-card h3 {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 14px;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+        .agent-card pre {
+            font-family: 'Menlo', 'Consolas', monospace;
+            font-size: 13px;
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            color: #4a5568;
+            line-height: 1.6;
+        }
+        .synthesis {
+            font-size: 16px;
+            color: #2c3e50;
+        }
+        .synthesis pre {
+            white-space: pre-wrap;
+            word-wrap: break-word;
+            font-family: 'Georgia', 'Times New Roman', serif;
+            font-size: 16px;
+            line-height: 1.7;
+        }
+        .decision-box {
+            border-radius: 4px;
+            padding: 30px 35px;
+            margin-top: 10px;
+        }
+        .decision-buy {
+            background: #eafaf1;
+            border: 2px solid #27ae60;
+        }
+        .decision-sell {
+            background: #fdf0ef;
+            border: 2px solid #e74c3c;
+        }
+        .decision-hold {
+            background: #fef9e7;
+            border: 2px solid #f39c12;
+        }
+        .decision-na {
+            background: #f0f3f7;
+            border: 2px solid #7f8c9b;
+        }
+        .decision-label {
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
+            margin-bottom: 6px;
+        }
+        .decision-buy .decision-label { color: #27ae60; }
+        .decision-sell .decision-label { color: #e74c3c; }
+        .decision-hold .decision-label { color: #f39c12; }
+        .decision-na .decision-label { color: #7f8c9b; }
+        .decision-value {
+            font-size: 32px;
+            font-weight: 700;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+        }
+        .decision-buy .decision-value { color: #1e8449; }
+        .decision-sell .decision-value { color: #c0392b; }
+        .decision-hold .decision-value { color: #d68910; }
+        .decision-na .decision-value { color: #5d6d7e; }
+        .conviction-badge {
+            display: inline-block;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 13px;
+            font-weight: 600;
+            padding: 4px 14px;
+            border-radius: 20px;
+            margin-top: 10px;
+        }
+        .conviction-high { background: #d4efdf; color: #1e8449; }
+        .conviction-medium { background: #fef3cd; color: #d68910; }
+        .conviction-low { background: #fadbd8; color: #c0392b; }
+        .conviction-na { background: #e8ecf0; color: #5d6d7e; }
+        .reasoning {
+            margin-top: 16px;
+            font-size: 15px;
+            color: #4a5568;
+        }
+        .footer {
+            padding: 20px 50px;
+            border-top: 1px solid #e1e5ea;
+            font-family: 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12px;
+            color: #a0aab4;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{{ ticker }} — Investment Committee Decision</h1>
+            <div class="meta">{{ date }} &nbsp;|&nbsp; Autonomous Investment Committee</div>
+        </div>
+
+        <div class="hypothesis-bar">
+            <strong>Hypothesis:</strong> {{ hypothesis }}
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <div class="section-title">Agent Contributions</div>
+                {% for agent_name, output in agent_outputs.items() %}
+                <div class="agent-card">
+                    <h3>{{ agent_name }}</h3>
+                    <pre>{{ output }}</pre>
+                </div>
+                {% endfor %}
+            </div>
+
+            <div class="section">
+                <div class="section-title">Chair's Synthesis</div>
+                <div class="synthesis">
+                    <pre>{{ chair_synthesis }}</pre>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Final Decision</div>
+                {% set rec_lower = recommendation | lower %}
+                <div class="decision-box {% if rec_lower == 'buy' %}decision-buy{% elif rec_lower == 'sell' %}decision-sell{% elif rec_lower == 'hold' %}decision-hold{% else %}decision-na{% endif %}">
+                    <div class="decision-label">Recommendation</div>
+                    <div class="decision-value">{{ recommendation }}</div>
+
+                    {% set conv_lower = conviction | lower %}
+                    <span class="conviction-badge {% if conv_lower == 'high' %}conviction-high{% elif conv_lower == 'medium' %}conviction-medium{% elif conv_lower == 'low' %}conviction-low{% else %}conviction-na{% endif %}">
+                        Conviction: {{ conviction }}
+                    </span>
+
+                    {% if reasoning %}
+                    <div class="reasoning">{{ reasoning }}</div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <div class="footer">
+            Decision reached by autonomous investment committee with {{ agent_outputs | length }} contributing agents.
+        </div>
+    </div>
+</body>
+</html>
