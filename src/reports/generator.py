@@ -27,7 +27,7 @@ class ReportGenerator:
                                      agent_outputs: dict, chair_synthesis: str,
                                      recommendation: str, conviction: str,
                                      reasoning: str) -> str:
-        template = self.env.get_template("committee_decision.md")
+        template = self.env.get_template("committee_decision.html")
         return template.render(
             ticker=ticker,
             date=date.today().isoformat(),
