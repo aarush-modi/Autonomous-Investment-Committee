@@ -56,7 +56,6 @@ gen.save(memo, test_path)
 assert os.path.exists(test_path)
 os.remove(test_path)
 os.rmdir("data/reports")
-os.rmdir("data")
 print("✓ Save works")
 
 print("\nAll report tests passed!")
