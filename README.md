@@ -21,7 +21,7 @@ src/
 │   ├── agent.py              # BaseAgent with Anthropic SDK tool-use loop
 │   ├── tool.py               # @tool decorator with auto schema generation
 │   ├── message.py            # AgentMessage and AgentResult models
-│   └── orchestrator.py       # CommitteeOrchestrator pipeline
+│   └── orchestrator.py       # CommitteeOrchestrator (pipeline + Chair mode)
 ├── data/
 │   ├── models.py             # Pydantic models (Quote, OHLCV, FinancialStatements, Filing)
 │   ├── cache.py              # SQLite-backed cache with TTL
@@ -52,6 +52,12 @@ src/
 │   ├── chunking.py           # Section-aware document chunking
 │   ├── store.py              # ChromaDB vector store wrapper
 │   └── ingest.py             # Filing ingestion pipeline
+├── reports/
+│   ├── generator.py          # Jinja2 report renderer
+│   └── templates/
+│       ├── investment_memo.md
+│       ├── risk_report.md
+│       └── committee_decision.md
 config/
 └── prompts/                  # System prompts per agent (markdown files)
 scripts/
@@ -63,7 +69,7 @@ scripts/
 ```bash
 python3 -m venv venv
 source venv/bin/activate
-pip install anthropic pydantic yfinance fredapi pandas numpy scipy chromadb sentence-transformers edgartools python-dotenv
+pip install anthropic pydantic yfinance fredapi pandas numpy scipy chromadb sentence-transformers edgartools python-dotenv jinja2
 ```
 
 Create a `.env` file with your API keys:
@@ -86,6 +92,9 @@ python3 test_data.py
 
 # Test RAG system (no API key needed, runs locally)
 python3 test_rag.py
+
+# Test report generation (no API key needed)
+python3 test_reports.py
 
 # Test Market Data agent (needs ANTHROPIC_API_KEY)
 python3 test_market_agent.py
@@ -111,3 +120,4 @@ python3 scripts/ingest_filings.py --ticker AAPL --filing-type 10-K --limit 3
 - **Cache**: SQLite
 - **RAG**: ChromaDB + sentence-transformers
 - **Analysis**: NumPy, SciPy, Pandas
+- **Reports**: Jinja2 templates
