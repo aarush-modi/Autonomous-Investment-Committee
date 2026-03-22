@@ -1,4 +1,9 @@
 import argparse
+import sys
+import os
+
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+
 from src.pipeline.runner import run_committee
 
 
