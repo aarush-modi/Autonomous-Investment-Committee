@@ -23,6 +23,7 @@ data/reports/
 # ChromaDB local storage
 chroma_data/
 data/vectorstore/
+chroma.sqlite3
 
 # Cache
 cache.db
