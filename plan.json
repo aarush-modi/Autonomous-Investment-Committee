@@ -71,12 +71,10 @@
     "src/core/tool.py": "@tool decorator that auto-generates Anthropic tool schemas from type annotations",
     "src/core/message.py": "AgentMessage, AgentResult Pydantic models for inter-agent communication",
     "src/core/orchestrator.py": "CommitteeOrchestrator — manages a full investment committee session",
-    "src/core/session.py": "Session state management",
-    "src/agents/": "One file per agent, each inheriting from BaseAgent",
-    "src/tools/market/": "yahoo_finance.py, alpha_vantage.py, fred.py — data fetching tools",
+        "src/agents/": "One file per agent, each inheriting from BaseAgent",
+    "src/tools/market/": "yahoo_finance.py, fred.py — data fetching tools",
     "src/tools/research/": "sec_edgar.py, vector_search.py — filing retrieval and RAG tools",
-    "src/tools/analysis/": "statistics.py, backtesting.py, risk_metrics.py — computation tools",
-    "src/tools/scraping/": "news_sentiment.py, alternative.py — web scraping tools (mostly stubbed Phase 1)",
+    "src/tools/analysis/": "statistics.py, risk_metrics.py — computation tools",
     "src/data/providers/base.py": "Abstract interfaces: MarketDataProvider, EconomicDataProvider, FilingsProvider",
     "src/data/providers/yahoo.py": "yfinance wrapper implementing MarketDataProvider",
     "src/data/providers/fred.py": "FRED wrapper implementing EconomicDataProvider",
@@ -93,14 +91,14 @@
     "src/pipeline/hypothesis.py": "Investment hypothesis definition and validation",
     "scripts/run_committee.py": "CLI entry point",
     "scripts/ingest_filings.py": "Bulk SEC filing ingestion into RAG",
-    "scripts/backfill_data.py": "Historical data backfill"
+    "scripts/run_committee.py": "CLI entry point — runs full pipeline"
   },
   "implementation_steps": [
     {
       "step": 1,
       "title": "Core Framework",
-      "status": "pending",
-      "files": ["src/core/agent.py", "src/core/tool.py", "src/core/message.py", "src/core/orchestrator.py", "src/core/session.py"],
+      "status": "complete",
+      "files": ["src/core/agent.py", "src/core/tool.py", "src/core/message.py", "src/core/orchestrator.py"],
       "description": "Build BaseAgent with Anthropic SDK tool-use loop, @tool decorator with auto-schema generation, message types (AgentMessage, AgentResult), and orchestrator skeleton.",
       "key_concepts": [
         "Anthropic messages.create() with tools parameter",
@@ -112,7 +110,7 @@
     {
       "step": 2,
       "title": "Data Layer",
-      "status": "pending",
+      "status": "complete",
       "files": ["src/data/providers/base.py", "src/data/providers/yahoo.py", "src/data/cache.py", "src/data/models.py", "pyproject.toml"],
       "description": "Define abstract data provider interfaces, implement Yahoo Finance provider, build SQLite cache, define Pydantic data models (Quote, OHLCV, etc.).",
       "key_concepts": [
@@ -125,7 +123,7 @@
     {
       "step": 3,
       "title": "Market Data Agent",
-      "status": "pending",
+      "status": "complete",
       "files": ["src/agents/market_data.py", "src/tools/market/yahoo_finance.py", "config/prompts/market_data_agent.md"],
       "description": "First working agent end-to-end. Implement market data tools (get_stock_price, get_historical_ohlcv, get_market_indices), wire them into a MarketDataAgent that inherits BaseAgent, write the system prompt.",
       "key_concepts": [
@@ -137,7 +135,7 @@
     {
       "step": 4,
       "title": "RAG System",
-      "status": "pending",
+      "status": "complete",
       "files": ["src/rag/store.py", "src/rag/embeddings.py", "src/rag/ingest.py", "src/rag/chunking.py", "src/data/providers/edgar.py", "src/agents/research_analyst.py", "src/tools/research/sec_edgar.py", "src/tools/research/vector_search.py", "config/prompts/research_analyst_agent.md", "scripts/ingest_filings.py"],
       "description": "Set up ChromaDB vector store, implement sentence-transformers embeddings, build document chunking (section-aware for SEC filings), create SEC EDGAR provider using edgartools, build ingestion pipeline, implement Research Analyst agent with search_knowledge_base tool.",
       "key_concepts": [
@@ -150,7 +148,7 @@
     {
       "step": 5,
       "title": "Remaining Agents",
-      "status": "pending",
+      "status": "complete",
       "files": [
         "src/agents/alternative_data.py", "src/agents/quant_analyst.py", "src/agents/risk_manager.py",
         "src/tools/market/fred.py", "src/tools/analysis/statistics.py", "src/tools/analysis/risk_metrics.py",
@@ -168,7 +166,7 @@
     {
       "step": 6,
       "title": "Committee Chair & Orchestration",
-      "status": "pending",
+      "status": "complete",
       "files": ["src/agents/committee_chair.py", "src/core/orchestrator.py", "config/prompts/committee_chair_agent.md"],
       "description": "Build the Committee Chair agent that uses delegate_to_agent as a tool to call other agents. The Chair receives a hypothesis, decides which agents to consult, synthesizes their outputs. Wire up the CommitteeOrchestrator to manage a full session.",
       "key_concepts": [
@@ -181,7 +179,7 @@
     {
       "step": 7,
       "title": "Report Generation",
-      "status": "pending",
+      "status": "complete",
       "files": ["src/reports/generator.py", "src/reports/templates/investment_memo.md", "src/reports/templates/risk_report.md", "src/reports/templates/committee_decision.md"],
       "description": "Build Jinja2-based report generator that takes agent outputs and produces formatted markdown investment memos. Create templates for investment memo, risk report, and committee decision.",
       "key_concepts": [
@@ -193,7 +191,7 @@
     {
       "step": 8,
       "title": "CLI & End-to-End Pipeline",
-      "status": "pending",
+      "status": "complete",
       "files": ["scripts/run_committee.py", "src/pipeline/runner.py", "src/pipeline/hypothesis.py", "config/settings.py", "config/agents.yaml", ".env.example", "pyproject.toml", ".gitignore"],
       "description": "Build the CLI entry point, wire up the full pipeline (hypothesis → orchestrator → agents → report), finalize all configuration files, create .env.example and .gitignore, test end-to-end.",
       "key_concepts": [
@@ -212,7 +210,7 @@
     "scaling_path": "Phase 2+: async task queues for parallel agent execution, streaming data feeds, backtesting engine, signal generation, portfolio construction."
   },
   "phase1_deliverable": {
-    "command": "python scripts/run_committee.py --hypothesis \"Evaluate NVDA as a long position given AI infrastructure demand growth\" --output data/reports/nvda_analysis.md",
+    "command": "python scripts/run_committee.py --ticker NVDA --hypothesis \"Evaluate NVDA as a long position given AI infrastructure demand growth\" --output data/reports/nvda_analysis.md",
     "output": "Multi-section investment memo with market data analysis, fundamental research from SEC filings, basic risk metrics, economic context, and a synthesized Buy/Sell/Hold recommendation with conviction level."
   }
 }

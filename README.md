@@ -2,15 +2,24 @@
 
 Multi-agent system that simulates a professional investment board. Specialized AI agents collaborate to ingest market data, analyze investments, and produce structured research reports with Buy/Sell/Hold recommendations.
 
+## Usage
+
+```bash
+source venv/bin/activate
+python3 scripts/run_committee.py --ticker NVDA --hypothesis "Evaluate NVDA as a long position given AI infrastructure demand growth"
+```
+
+Output is saved to `data/reports/<ticker>_analysis.md`.
+
 ## Architecture
 
-The system uses the Anthropic Claude API to power specialized agents, each with their own tools and expertise:
+The system uses the Anthropic Claude API to power specialized agents, each with their own tools and expertise. The Committee Chair dynamically decides which agents to consult based on the hypothesis — no hard-coded pipeline.
 
 - **Committee Chair** — Orchestrates all agents, synthesizes final recommendation
-- **Market Data** — Fetches prices, volume, and indices from free APIs
-- **Research Analyst** — SEC filings, fundamental analysis, RAG knowledge base search
-- **Alternative Data** — Economic indicators, insider transactions
-- **Quant Analyst** — Statistical analysis, correlations, regression
+- **Market Data** — Fetches prices, volume, and indices via Yahoo Finance
+- **Research Analyst** — SEC filings, financial statements, RAG knowledge base search
+- **Alternative Data** — Economic indicators (FRED), insider transactions
+- **Quant Analyst** — Returns, correlations, regression analysis
 - **Risk Manager** — VaR, Sharpe ratio, max drawdown
 
 ## Project Structure
@@ -58,9 +67,15 @@ src/
 │       ├── investment_memo.md
 │       ├── risk_report.md
 │       └── committee_decision.md
+├── pipeline/
+│   ├── hypothesis.py         # Investment hypothesis validation
+│   └── runner.py             # Full pipeline: hypothesis → Chair → report
 config/
+├── settings.py               # Loads .env for API keys and config
+├── agents.yaml               # Per-agent config (model, temperature, max_tokens)
 └── prompts/                  # System prompts per agent (markdown files)
 scripts/
+├── run_committee.py          # CLI entry point
 └── ingest_filings.py         # Bulk SEC filing ingestion into RAG
 ```
 
@@ -77,6 +92,14 @@ Create a `.env` file with your API keys:
 ```
 ANTHROPIC_API_KEY=your-key-here
 FRED_API_KEY=your-key-here
+```
+
+## Ingesting SEC Filings
+
+Before the Research Analyst can search filings, ingest them into the vector store:
+
+```bash
+python3 scripts/ingest_filings.py --ticker AAPL --filing-type 10-K --limit 3
 ```
 
 ## Testing
@@ -104,12 +127,6 @@ python3 test_agents.py
 
 # Test full Committee Chair orchestration (needs ANTHROPIC_API_KEY + FRED_API_KEY)
 python3 test_chair.py
-```
-
-## Ingesting SEC Filings
-
-```bash
-python3 scripts/ingest_filings.py --ticker AAPL --filing-type 10-K --limit 3
 ```
 
 ## Tech Stack
