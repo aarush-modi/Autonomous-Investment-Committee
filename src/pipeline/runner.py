@@ -13,16 +13,22 @@ def _parse_decision(text: str) -> dict:
     conviction = "N/A"
     reasoning = ""
 
+    # Search for the last occurrence of Buy/Sell/Hold to get the Chair's final call
     rec_match = re.search(r"\*\*Recommendation\*\*[:\s]*(Buy|Sell|Hold)", text, re.IGNORECASE)
     if not rec_match:
-        rec_match = re.search(r"(Buy|Sell|Hold)", text, re.IGNORECASE)
-    if rec_match:
+        # findall returns all matches — take the last one (the final decision)
+        all_recs = re.findall(r"\b(Buy|Sell|Hold)\b", text, re.IGNORECASE)
+        if all_recs:
+            recommendation = all_recs[-1].capitalize()
+    else:
         recommendation = rec_match.group(1).capitalize()
 
     conv_match = re.search(r"\*\*Conviction[^:]*\*\*[:\s]*(High|Medium|Low)", text, re.IGNORECASE)
     if not conv_match:
-        conv_match = re.search(r"Conviction[:\s]*(High|Medium|Low)", text, re.IGNORECASE)
-    if conv_match:
+        all_convs = re.findall(r"Conviction[:\s]*(High|Medium|Low)", text, re.IGNORECASE)
+        if all_convs:
+            conviction = all_convs[-1].capitalize()
+    else:
         conviction = conv_match.group(1).capitalize()
 
     reason_match = re.search(r"\*\*Reasoning\*\*[:\s]*(.*?)(?:\n\n|\Z)", text, re.DOTALL | re.IGNORECASE)
