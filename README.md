@@ -31,6 +31,7 @@ src/
 │       ├── fred.py           # FRED economic data provider
 │       └── edgar.py          # SEC EDGAR filings provider
 ├── agents/
+│   ├── committee_chair.py    # Committee Chair — orchestrates all agents
 │   ├── market_data.py        # Market Data agent
 │   ├── research_analyst.py   # Research Analyst agent
 │   ├── alternative_data.py   # Alternative Data agent
@@ -91,6 +92,9 @@ python3 test_market_agent.py
 
 # Test Quant, Risk, and Alt Data agents (needs ANTHROPIC_API_KEY + FRED_API_KEY)
 python3 test_agents.py
+
+# Test full Committee Chair orchestration (needs ANTHROPIC_API_KEY + FRED_API_KEY)
+python3 test_chair.py
 ```
 
 ## Ingesting SEC Filings
