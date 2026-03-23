@@ -13,7 +13,6 @@ def _parse_decision(text: str) -> dict:
     conviction = "N/A"
     reasoning = ""
 
-<<<<<<< HEAD
     # Search for the last occurrence of Buy/Sell/Hold to get the Chair's final call
     rec_match = re.search(r"\*\*Recommendation\*\*[:\s]*(Buy|Sell|Hold)", text, re.IGNORECASE)
     if not rec_match:
@@ -22,25 +21,14 @@ def _parse_decision(text: str) -> dict:
         if all_recs:
             recommendation = all_recs[-1].capitalize()
     else:
-=======
-    rec_match = re.search(r"\*\*Recommendation\*\*[:\s]*(Buy|Sell|Hold)", text, re.IGNORECASE)
-    if not rec_match:
-        rec_match = re.search(r"(Buy|Sell|Hold)", text, re.IGNORECASE)
-    if rec_match:
->>>>>>> 7f4ba82fd4055c035c4a8296c682457d7c28d469
         recommendation = rec_match.group(1).capitalize()
 
     conv_match = re.search(r"\*\*Conviction[^:]*\*\*[:\s]*(High|Medium|Low)", text, re.IGNORECASE)
     if not conv_match:
-<<<<<<< HEAD
         all_convs = re.findall(r"Conviction[:\s]*(High|Medium|Low)", text, re.IGNORECASE)
         if all_convs:
             conviction = all_convs[-1].capitalize()
     else:
-=======
-        conv_match = re.search(r"Conviction[:\s]*(High|Medium|Low)", text, re.IGNORECASE)
-    if conv_match:
->>>>>>> 7f4ba82fd4055c035c4a8296c682457d7c28d469
         conviction = conv_match.group(1).capitalize()
 
     reason_match = re.search(r"\*\*Reasoning\*\*[:\s]*(.*?)(?:\n\n|\Z)", text, re.DOTALL | re.IGNORECASE)
@@ -73,13 +61,10 @@ def run_committee(ticker: str, thesis: str, output_path: str):
     gen = ReportGenerator()
     agent_outputs = result.get("agent_outputs", {})
     decision = _parse_decision(result["recommendation"])
-<<<<<<< HEAD
 
     # Use .html extension for output
     if output_path.endswith(".md"):
         output_path = output_path.rsplit(".md", 1)[0] + ".html"
-=======
->>>>>>> 7f4ba82fd4055c035c4a8296c682457d7c28d469
 
     report = gen.generate_committee_decision(
         ticker=hypothesis.ticker,
