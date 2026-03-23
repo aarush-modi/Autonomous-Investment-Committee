@@ -1,4 +1,5 @@
-from anthropic import Anthropic
+import time
+from anthropic import Anthropic, RateLimitError
 from src.core.message import AgentMessage, AgentResult
 
 #This is the base class all agents should inherit from because it manages the tool-use loop
@@ -21,8 +22,15 @@ class BaseAgent:
 
         #Will run until the agent is done
         while True: 
-            #Sends the message to the agent along with the tools
-            response = self.client.messages.create(model=self.model, messages=messages, tools=self.tool_schemas, max_tokens=self.max_tokens, system=self.system_prompt) 
+            #Sends the message to the agent along with the tools, with retry on rate limit
+            for attempt in range(3):
+                try:
+                    response = self.client.messages.create(model=self.model, messages=messages, tools=self.tool_schemas, max_tokens=self.max_tokens, system=self.system_prompt)
+                    break
+                except RateLimitError:
+                    wait = 30 * (attempt + 1)
+                    print(f"  Rate limited, waiting {wait}s...")
+                    time.sleep(wait)
             #If claude is done thinking
             if response.stop_reason == "end_turn": 
                 text = "".join(b.text for b in response.content if b.type == "text")
