@@ -10,7 +10,7 @@ class AlternativeDataAgent(BaseAgent):
         super().__init__(
             name="Alternative Data",
             system_prompt=SYSTEM_PROMPT,
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             tools=[get_economic_indicators, get_insider_transactions],
             max_tokens=1024,
             temperature=0,

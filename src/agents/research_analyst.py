@@ -11,7 +11,7 @@ class ResearchAnalystAgent(BaseAgent):
         super().__init__(
             name="Research Analyst",
             system_prompt=SYSTEM_PROMPT,
-            model="claude-sonnet-4-20250514",
+            model="claude-haiku-4-5-20251001",
             tools=[search_sec_filings, get_financial_statements, search_knowledge_base],
             max_tokens=2048,
             temperature=0,
