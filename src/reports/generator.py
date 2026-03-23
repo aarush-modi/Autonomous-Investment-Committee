@@ -1,5 +1,5 @@
 import os
-from datetime import datetime
+from datetime import datetime, date
 from jinja2 import Environment, FileSystemLoader
 
 
@@ -19,7 +19,8 @@ class ReportGenerator:
         template = self.env.get_template("risk_report.md")
         return template.render(
             ticker=ticker,
-            date=date.today().isoformat(sep = ' ', timespec = 'seconds'),
+            date=datetime.now().isoformat(sep='T', timespec='seconds'),
+            zone=datetime.now().astimezone().tzname(),
             **sections,
         )
 
@@ -30,7 +31,7 @@ class ReportGenerator:
         template = self.env.get_template("committee_decision.html")
         return template.render(
             ticker=ticker,
-            date=datetime.now().isoformat(sep=' ', timespec='seconds'),
+            date=datetime.now().astimezone().strftime('%Y-%m-%dT%H:%M:%S %Z'),
             hypothesis=hypothesis,
             agent_outputs=agent_outputs,
             chair_synthesis=chair_synthesis,
