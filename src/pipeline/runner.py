@@ -44,14 +44,14 @@ def _parse_decision(text: str) -> dict:
     }
 
 
-def run_committee(ticker: str, thesis: str, output_path: str):
+async def run_committee(ticker: str, thesis: str, output_path: str):
     hypothesis = InvestmentHypothesis(ticker=ticker, thesis=thesis)
 
     print(f"Running investment committee for {hypothesis.ticker}...")
     print(f"Thesis: {hypothesis.thesis}\n")
 
     orch = CommitteeOrchestrator()
-    result = orch.run_with_chair(hypothesis.thesis)
+    result = await orch.run_with_chair(hypothesis.thesis)
 
     if not result["success"]:
         print("Committee session failed.")

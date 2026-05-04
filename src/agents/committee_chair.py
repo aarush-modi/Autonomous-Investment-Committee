@@ -24,12 +24,12 @@ agent_outputs = {}
 
 
 @tool("Delegates a query to a specialist agent. Agent names: Market Data, Research Analyst, Alternative Data, Quant Analyst, Risk Manager")
-def delegate_to_agent(agent_name: str, query: str) -> str:
+async def delegate_to_agent(agent_name: str, query: str) -> str:
     if agent_name not in AGENTS:
         return f"Unknown agent: {agent_name}. Available: {', '.join(AGENTS.keys())}"
 
     agent = AGENTS[agent_name]()
-    result = agent.run(AgentMessage(content=query, sender="Committee Chair"))
+    result = await agent.run(AgentMessage(content=query, sender="Committee Chair"))
     agent_outputs[agent_name] = result.content
     return f"[{agent_name}]:\n{result.content}"
 

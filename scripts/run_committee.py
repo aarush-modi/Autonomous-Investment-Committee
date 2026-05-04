@@ -1,4 +1,5 @@
 import argparse
+import asyncio
 import sys
 import os
 
@@ -15,4 +16,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     output = args.output or f"data/reports/{args.ticker.lower()}_analysis.md"
-    run_committee(args.ticker, args.hypothesis, output)
+    asyncio.run(run_committee(args.ticker, args.hypothesis, output))
