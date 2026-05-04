@@ -14,6 +14,8 @@ class BaseAgent:
         self.client = Anthropic()
         self.tool_registry = {t.tool_name: t for t in tools}
         self.tool_schemas = [t.schema for t in tools]
+        #Wrap system prompt in a cache_control block so tools+system are reused across turns
+        self.system_blocks = [{"type": "text", "text": system_prompt, "cache_control": {"type": "ephemeral"}}]
 
     #This is the core loop that sends a message to the agent and handels the back and forth with the agent when the agent needs to use tools
     def run(self, message: AgentMessage) -> AgentResult: 
@@ -26,7 +28,7 @@ class BaseAgent:
             max_attempts = 3
             for attempt in range(max_attempts):
                 try:
-                    response = self.client.messages.create(model=self.model, messages=messages, tools=self.tool_schemas, max_tokens=self.max_tokens, system=self.system_prompt)
+                    response = self.client.messages.create(model=self.model, messages=messages, tools=self.tool_schemas, max_tokens=self.max_tokens, system=self.system_blocks)
                     break
                 except RateLimitError as e:
                     if attempt == max_attempts - 1:
