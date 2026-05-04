@@ -12,6 +12,6 @@ class RiskManagerAgent(BaseAgent):
             system_prompt=SYSTEM_PROMPT,
             model="claude-haiku-4-5-20251001",
             tools=[calculate_var, calculate_sharpe_ratio, calculate_max_drawdown],
-            max_tokens=1024,
+            max_tokens=2048,
             temperature=0,
         )

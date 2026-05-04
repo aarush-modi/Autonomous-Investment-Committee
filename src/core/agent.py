@@ -29,9 +29,6 @@ class BaseAgent:
             for attempt in range(max_attempts):
                 try:
                     response = self.client.messages.create(model=self.model, messages=messages, tools=self.tool_schemas, max_tokens=self.max_tokens, system=self.system_blocks)
-                    #TEMP: cache verification — remove after confirming cache_read > 0 on later iterations
-                    u = response.usage
-                    print(f"  [{self.name}] usage: input={u.input_tokens} output={u.output_tokens} cache_read={getattr(u, 'cache_read_input_tokens', 0) or 0} cache_creation={getattr(u, 'cache_creation_input_tokens', 0) or 0}")
                     break
                 except RateLimitError as e:
                     if attempt == max_attempts - 1:

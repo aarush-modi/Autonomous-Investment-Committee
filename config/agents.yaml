@@ -31,5 +31,5 @@ quant_analyst:
 risk_manager:
   model: claude-sonnet-4-20250514
   temperature: 0
-  max_tokens: 1024
+  max_tokens: 2048
   prompt: config/prompts/risk_manager_agent.md
