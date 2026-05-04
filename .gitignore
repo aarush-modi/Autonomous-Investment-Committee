@@ -24,6 +24,5 @@ data/reports/
 chroma_data/
 data/vectorstore/chroma.sqlite3
 
-
 # Cache
 cache.db
