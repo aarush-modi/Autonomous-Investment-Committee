@@ -41,9 +41,15 @@ class BaseAgent:
                     print(f"  Rate limited, waiting {wait}s...")
                     time.sleep(wait)
             #If claude is done thinking
-            if response.stop_reason == "end_turn": 
+            if response.stop_reason == "end_turn":
                 text = "".join(b.text for b in response.content if b.type == "text")
                 return AgentResult(agent_name=self.name, content=text)
+
+            #Output was truncated — return what we have instead of looping forever on the same prompt
+            if response.stop_reason == "max_tokens":
+                text = "".join(b.text for b in response.content if b.type == "text")
+                print(f"  [{self.name}] hit max_tokens — returning partial output")
+                return AgentResult(agent_name=self.name, content=text or f"[{self.name} hit max_tokens before completing]")
 
             #Agent wants to use a tool so we need to save conversation history
             if response.stop_reason == "tool_use":

@@ -12,6 +12,6 @@ class QuantAnalystAgent(BaseAgent):
             system_prompt=SYSTEM_PROMPT,
             model="claude-haiku-4-5-20251001",
             tools=[calculate_returns, calculate_correlations, run_regression],
-            max_tokens=1024,
+            max_tokens=2048,
             temperature=0,
         )
