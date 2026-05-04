@@ -9,25 +9,27 @@ source venv/bin/activate
 python3 scripts/run_committee.py --ticker NVDA --hypothesis "Evaluate NVDA as a long position given AI infrastructure demand growth"
 ```
 
-Output is saved to `data/reports/<ticker>_analysis.md`.
+Output is saved to `data/reports/<ticker>_analysis.html`.
 
 ## Architecture
 
 The system uses the Anthropic Claude API to power specialized agents, each with their own tools and expertise. The Committee Chair dynamically decides which agents to consult based on the hypothesis — no hard-coded pipeline.
 
-- **Committee Chair** — Orchestrates all agents, synthesizes final recommendation
-- **Market Data** — Fetches prices, volume, and indices via Yahoo Finance
-- **Research Analyst** — SEC filings, financial statements, RAG knowledge base search
-- **Alternative Data** — Economic indicators (FRED), insider transactions
-- **Quant Analyst** — Returns, correlations, regression analysis
-- **Risk Manager** — VaR, Sharpe ratio, max drawdown
+- **Committee Chair** (Sonnet) — Orchestrates all agents, synthesizes final recommendation
+- **Market Data** (Haiku) — Fetches prices, volume, and indices via Yahoo Finance
+- **Research Analyst** (Haiku) — SEC filings, financial statements, RAG knowledge base search
+- **Alternative Data** (Haiku) — Economic indicators (FRED), insider transactions
+- **Quant Analyst** (Haiku) — Returns, correlations, regression analysis
+- **Risk Manager** (Haiku) — VaR, Sharpe ratio, max drawdown
+
+Sub-agents run **concurrently** via `asyncio.gather` when the Chair issues multiple delegations in a single turn. The Chair's static prefix (system prompt + tools) and growing conversation history are both **prompt-cached** with a rolling 5-min ephemeral breakpoint, cutting per-call input tokens to ~10% on later iterations.
 
 ## Project Structure
 
 ```
 src/
 ├── core/
-│   ├── agent.py              # BaseAgent with Anthropic SDK tool-use loop
+│   ├── agent.py              # Async BaseAgent with Anthropic SDK tool-use loop, prompt caching, parallel tool execution
 │   ├── tool.py               # @tool decorator with auto schema generation
 │   ├── message.py            # AgentMessage and AgentResult models
 │   └── orchestrator.py       # CommitteeOrchestrator (pipeline + Chair mode)
@@ -66,7 +68,7 @@ src/
 │   └── templates/
 │       ├── investment_memo.md
 │       ├── risk_report.md
-│       └── committee_decision.md
+│       └── committee_decision.html
 ├── pipeline/
 │   ├── hypothesis.py         # Investment hypothesis validation
 │   └── runner.py             # Full pipeline: hypothesis → Chair → report
@@ -131,7 +133,9 @@ python3 test_chair.py
 
 ## Tech Stack
 
-- **LLM**: Anthropic Claude API
+- **LLM**: Anthropic Claude API (Sonnet for Chair synthesis, Haiku for sub-agents)
+- **Concurrency**: `asyncio` + `AsyncAnthropic` for parallel sub-agent execution
+- **Token efficiency**: Anthropic prompt caching (ephemeral, rolling conversation breakpoint)
 - **Data**: yfinance, FRED, SEC EDGAR (edgartools)
 - **Models**: Pydantic
 - **Cache**: SQLite
