@@ -217,7 +217,7 @@
     {
       "step": 9,
       "title": "Async Parallel Agents",
-      "status": "pending",
+      "status": "complete",
       "files": ["src/core/agent.py", "src/core/orchestrator.py", "src/agents/committee_chair.py"],
       "description": "Convert BaseAgent to async, run sub-agents in parallel using asyncio.gather when they have no dependencies. Significantly reduces end-to-end latency.",
       "key_concepts": [
