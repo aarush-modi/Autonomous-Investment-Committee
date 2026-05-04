@@ -46,16 +46,16 @@ class BaseAgent:
                 return AgentResult(agent_name=self.name, content=text)
 
             #Agent wants to use a tool so we need to save conversation history
-            if response.stop_reason == "tool_use": 
+            if response.stop_reason == "tool_use":
                 messages.append({"role": "assistant", "content": response.content})
-                
+
                 tool_results = []
 
                 #For each tool use block in response.content
                 #Iterate through the content blocks
-                for block in response.content: 
+                for block in response.content:
                     #If the block is a tool use block, look it up in the tool_registry, run it with the arguments passed by the agent, and collect the results
-                    if block.type == "tool_use": 
+                    if block.type == "tool_use":
                         tool_name = block.name
                         tool_input = block.input
                         tool = self.tool_registry[tool_name]
@@ -65,5 +65,15 @@ class BaseAgent:
                             "tool_use_id": block.id,
                             "content": str(result),
                         })
+                #Move the conversation cache breakpoint forward: strip cache_control from
+                #prior tool_result blocks so we stay within the 4-breakpoint limit, then
+                #mark the latest tool_result so the growing prefix gets cached.
+                for prior in messages:
+                    if isinstance(prior.get("content"), list):
+                        for b in prior["content"]:
+                            if isinstance(b, dict) and b.get("type") == "tool_result":
+                                b.pop("cache_control", None)
+                if tool_results:
+                    tool_results[-1]["cache_control"] = {"type": "ephemeral"}
                 #Send tool results back to the agent as a user message and loops back to the while True loop so the agen can process results
-                messages.append({"role": "user", "content": tool_results}) 
+                messages.append({"role": "user", "content": tool_results})
