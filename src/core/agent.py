@@ -23,12 +23,16 @@ class BaseAgent:
         #Will run until the agent is done
         while True: 
             #Sends the message to the agent along with the tools, with retry on rate limit
-            for attempt in range(3):
+            max_attempts = 3
+            for attempt in range(max_attempts):
                 try:
                     response = self.client.messages.create(model=self.model, messages=messages, tools=self.tool_schemas, max_tokens=self.max_tokens, system=self.system_prompt)
                     break
-                except RateLimitError:
-                    wait = 30 * (attempt + 1)
+                except RateLimitError as e:
+                    if attempt == max_attempts - 1:
+                        raise
+                    retry_after = e.response.headers.get("retry-after") if e.response is not None else None
+                    wait = float(retry_after) if retry_after else 30 * (attempt + 1)
                     print(f"  Rate limited, waiting {wait}s...")
                     time.sleep(wait)
             #If claude is done thinking
