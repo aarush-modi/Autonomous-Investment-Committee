@@ -1,6 +1,6 @@
 import asyncio
 import inspect
-from anthropic import AsyncAnthropic, RateLimitError
+from anthropic import AsyncAnthropic, RateLimitError, APIStatusError
 from src.core.message import AgentMessage, AgentResult
 
 #This is the base class all agents should inherit from because it manages the tool-use loop
@@ -50,6 +50,20 @@ class BaseAgent:
                     wait = float(retry_after) if retry_after else 30 * (attempt + 1)
                     print(f"  Rate limited, waiting {wait}s...")
                     await asyncio.sleep(wait)
+                except APIStatusError as e:
+                    #Credit/billing failures shouldn't take down the whole committee — return a
+                    #graceful AgentResult so the Chair can synthesize around the missing piece
+                    #(and so a sub-agent failing mid-asyncio.gather doesn't cancel its siblings).
+                    msg = getattr(e, "message", "") or str(e)
+                    if "credit balance" in msg.lower() or "billing" in msg.lower():
+                        print(f"\n  [{self.name}] Anthropic API credit balance too low — cannot complete this agent's work.")
+                        print(f"  Add credits at https://console.anthropic.com/settings/billing")
+                        print(f"  Returning gracefully so partial committee output is preserved.\n")
+                        return AgentResult(
+                            agent_name=self.name,
+                            content=f"[{self.name} could not complete: Anthropic API credit balance too low. Other agents' findings should still inform the recommendation.]",
+                        )
+                    raise
             #If claude is done thinking
             if response.stop_reason == "end_turn":
                 text = "".join(b.text for b in response.content if b.type == "text")
