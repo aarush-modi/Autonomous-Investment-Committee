@@ -39,7 +39,7 @@ class CommitteeChairAgent(BaseAgent):
         super().__init__(
             name="Committee Chair",
             system_prompt=SYSTEM_PROMPT,
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-5",
             tools=[delegate_to_agent],
             max_tokens=4096,
             temperature=0,

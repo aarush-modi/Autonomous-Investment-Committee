@@ -1,35 +1,34 @@
 committee_chair:
-  model: claude-sonnet-4-20250514
-  temperature: 0
+  model: claude-sonnet-5
   max_tokens: 4096
   prompt: config/prompts/committee_chair_agent.md
 
 market_data:
-  model: claude-sonnet-4-20250514
+  model: claude-haiku-4-5
   temperature: 0
   max_tokens: 1024
   prompt: config/prompts/market_data_agent.md
 
 research_analyst:
-  model: claude-sonnet-4-20250514
+  model: claude-haiku-4-5
   temperature: 0
   max_tokens: 2048
   prompt: config/prompts/research_analyst_agent.md
 
 alternative_data:
-  model: claude-sonnet-4-20250514
+  model: claude-haiku-4-5
   temperature: 0
   max_tokens: 1024
   prompt: config/prompts/alt_data_agent.md
 
 quant_analyst:
-  model: claude-sonnet-4-20250514
+  model: claude-haiku-4-5
   temperature: 0
   max_tokens: 2048
   prompt: config/prompts/quant_analyst_agent.md
 
 risk_manager:
-  model: claude-sonnet-4-20250514
+  model: claude-haiku-4-5
   temperature: 0
   max_tokens: 2048
   prompt: config/prompts/risk_manager_agent.md

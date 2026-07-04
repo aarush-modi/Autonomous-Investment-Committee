@@ -1,6 +1,26 @@
 {
   "project": "Autonomous Investment Committee",
   "description": "Multi-agent system simulating a professional investment board. Specialized AI agents collaborate to ingest market data, analyze investments, and produce structured research reports.",
+  "launch": {
+    "goal": "Public open-source release on GitHub",
+    "target_date": "2026-08-26",
+    "timeline": "8 weeks from 2026-07-01",
+    "definition_of_done": [
+      "Repo installable from a fresh clone: pip install -e . with pinned dependencies, no venv/ pip-list instructions",
+      "LICENSE file and financial-disclaimer section in README (educational/research use, not investment advice)",
+      "pytest suite runs green in GitHub Actions CI without any API keys (Anthropic client mocked, network calls stubbed)",
+      "README with architecture diagram, a committed sample report, and a copy-paste quickstart verified on a clean machine",
+      "Graceful failure for every missing prerequisite: absent API key, empty vector store, rate-limited data provider"
+    ],
+    "weekly_schedule": {
+      "week_1": "Step 10 — cache integration",
+      "weeks_2_3": "Step 11 — packaging, pytest migration, CI",
+      "week_4": "Step 12 — robustness and first-run experience",
+      "week_5": "Step 13 — docs, sample reports, demo",
+      "weeks_6_7": "Step 14 — backtesting engine (stretch; cut without slipping launch)",
+      "week_8": "Buffer: fresh-clone dry run, launch checklist, publish"
+    }
+  },
   "tech_stack": {
     "language": "Python",
     "llm": "Anthropic Claude API (direct SDK)",
@@ -89,9 +109,13 @@
     "src/reports/templates/": "Markdown/Jinja2 templates: investment_memo.md, risk_report.md, committee_decision.md",
     "src/pipeline/runner.py": "Main pipeline: hypothesis → agents → report",
     "src/pipeline/hypothesis.py": "Investment hypothesis definition and validation",
-    "scripts/run_committee.py": "CLI entry point",
+    "scripts/run_committee.py": "CLI entry point — runs full pipeline",
     "scripts/ingest_filings.py": "Bulk SEC filing ingestion into RAG",
-    "scripts/run_committee.py": "CLI entry point — runs full pipeline"
+    "tests/": "pytest suite (migrated from root-level test_*.py scripts); Anthropic client mocked so tests run offline",
+    "pyproject.toml": "Package metadata + pinned dependencies (NOT YET CREATED — listed as complete in steps 2/8 but missing from repo)",
+    "LICENSE": "MIT license (NOT YET CREATED)",
+    ".github/workflows/ci.yml": "GitHub Actions: ruff + pytest on push/PR (NOT YET CREATED)",
+    "examples/": "Committed sample reports so visitors see output without spending API credits (NOT YET CREATED)"
   },
   "implementation_steps": [
     {
@@ -207,7 +231,7 @@
     "data_abstraction": "Abstract provider interfaces (MarketDataProvider, etc.) allow swapping free APIs for premium without changing agent code.",
     "agent_tool_loop": "BaseAgent runs: send messages → if stop_reason=='end_turn' return → else execute tool calls → append results → repeat.",
     "rag_strategy": "Section-aware chunking for SEC filings, ChromaDB with metadata filtering (ticker, filing_type, date), sentence-transformers for free local embeddings.",
-    "scaling_path": "Phase 2+: async task queues for parallel agent execution, streaming data feeds, backtesting engine, signal generation, portfolio construction."
+    "scaling_path": "Phase 2 (pre-launch): cache integration, packaging/tests/CI, robustness, docs — then backtesting as stretch. Phase 3 (post-launch): signal generation, portfolio construction, streaming data feeds."
   },
   "phase1_deliverable": {
     "command": "python scripts/run_committee.py --ticker NVDA --hypothesis \"Evaluate NVDA as a long position given AI infrastructure demand growth\" --output data/reports/nvda_analysis.md",
@@ -231,6 +255,7 @@
       "step": 10,
       "title": "Cache Integration",
       "status": "pending",
+      "priority": "launch-blocking",
       "files": ["src/data/providers/yahoo.py", "src/data/providers/fred.py", "src/data/providers/edgar.py", "src/data/cache.py"],
       "description": "Wire the existing SQLite cache into all data providers. Cache API responses with configurable TTL to reduce latency and respect rate limits.",
       "key_concepts": [
@@ -241,55 +266,85 @@
     },
     {
       "step": 11,
-      "title": "Backtesting Engine",
+      "title": "Packaging, Test Suite & CI",
       "status": "pending",
+      "priority": "launch-blocking",
+      "files": ["pyproject.toml", "LICENSE", "tests/", ".github/workflows/ci.yml", "README.md"],
+      "description": "Create pyproject.toml with pinned dependencies (it was listed in steps 2 and 8 but never actually created — the project currently has no dependency manifest at all). Add MIT LICENSE. Migrate the eight root-level test_*.py scripts into a tests/ pytest suite that runs offline by mocking the Anthropic client and stubbing provider network calls. Wire up GitHub Actions running ruff + pytest on every push.",
+      "key_concepts": [
+        "pip install -e . must work from a fresh clone — replaces the README's manual pip-install list",
+        "unittest.mock / pytest fixtures to fake messages.create() responses including tool_use blocks",
+        "Recorded fixture data for yfinance/FRED/EDGAR so CI never hits live APIs",
+        "CI green badge in README"
+      ]
+    },
+    {
+      "step": 12,
+      "title": "Robustness & First-Run Experience",
+      "status": "pending",
+      "priority": "launch-blocking",
+      "files": ["config/settings.py", "src/core/agent.py", "src/data/providers/yahoo.py", "src/data/providers/fred.py", "src/data/providers/edgar.py", "scripts/run_committee.py"],
+      "description": "A public user's first run must not end in a stack trace. Validate API keys at startup with actionable error messages, handle provider rate limits and network failures with retry/backoff, degrade gracefully when the vector store is empty (Research Analyst should say so, not crash), and add per-run cost estimation/ceiling so strangers don't get surprise API bills.",
+      "key_concepts": [
+        "Fail fast at startup: check ANTHROPIC_API_KEY / FRED_API_KEY before spending tokens",
+        "tenacity-style retry with exponential backoff on 429/5xx from data providers",
+        "Empty-knowledge-base fallback path for search_knowledge_base",
+        "Token/cost budget per committee session, printed at end of run"
+      ]
+    },
+    {
+      "step": 13,
+      "title": "Docs, Sample Reports & Demo",
+      "status": "pending",
+      "priority": "launch-blocking",
+      "files": ["README.md", "examples/", "docs/architecture.md"],
+      "description": "Rewrite README for a public audience: quickstart verified on a clean machine, architecture diagram (Mermaid), committed example reports so visitors see the output without an API key, terminal demo GIF, and a prominent disclaimer that this is an educational/research tool and not investment advice.",
+      "key_concepts": [
+        "Financial disclaimer is non-negotiable for a public tool producing Buy/Sell/Hold output",
+        "Committed sample memo (e.g. examples/nvda_analysis.md) is the highest-leverage marketing asset",
+        "Mermaid diagram of Chair → sub-agent delegation flow",
+        "Document expected per-run API cost so users aren't surprised"
+      ]
+    },
+    {
+      "step": 14,
+      "title": "Backtesting Engine (stretch)",
+      "status": "pending",
+      "priority": "stretch — cut before slipping the launch date",
       "files": ["src/tools/analysis/backtesting.py", "src/agents/quant_analyst.py"],
-      "description": "Build a backtesting engine that tests investment strategies against historical data. Integrate as a tool for the Quant Analyst agent.",
+      "description": "Complete the stubbed backtesting engine as the one pre-launch feature differentiator: test simple entry/exit strategies against historical data, integrated as a Quant Analyst tool. Only start after steps 10–13 are done; weeks 6–7 of the schedule with week 8 held as buffer.",
       "key_concepts": [
         "Strategy definition (entry/exit rules)",
         "Historical simulation with transaction costs",
         "Performance metrics: total return, max drawdown, win rate",
         "Avoid look-ahead bias"
       ]
-    },
+    }
+  ],
+  "phase3_post_launch": [
     {
-      "step": 12,
       "title": "Signal Generation",
-      "status": "pending",
       "files": ["src/signals/generator.py", "src/signals/indicators.py", "src/signals/alerts.py"],
       "description": "Automated signal generation based on technical indicators and agent outputs. Trigger alerts when conditions are met (e.g. RSI below 30, unusual volume).",
-      "key_concepts": [
-        "Technical indicators: RSI, MACD, Bollinger Bands",
-        "Threshold-based alert triggers",
-        "Signal scoring and prioritization",
-        "Scheduled monitoring via cron or background tasks"
-      ]
+      "deferred_reason": "Multi-week feature that does not block a public release; adds ongoing-monitoring scope beyond the core research-report deliverable."
     },
     {
-      "step": 13,
       "title": "Portfolio Construction",
-      "status": "pending",
       "files": ["src/portfolio/optimizer.py", "src/portfolio/allocator.py", "src/portfolio/constraints.py", "src/agents/portfolio_manager.py"],
-      "description": "Move beyond single stock analysis to full portfolio optimization. Build a Portfolio Manager agent that considers correlations, risk budget, and position sizing.",
-      "key_concepts": [
-        "Mean-variance optimization (Markowitz)",
-        "Risk parity allocation",
-        "Position sizing based on conviction and risk budget",
-        "Sector and concentration constraints"
-      ]
+      "description": "Portfolio Manager agent with mean-variance optimization, risk parity, position sizing, and concentration constraints.",
+      "deferred_reason": "Changes the product from single-ticker research to portfolio management — a scope expansion, not launch polish."
     },
     {
-      "step": 14,
       "title": "Streaming Data & Live Monitoring",
-      "status": "pending",
       "files": ["src/data/streaming.py", "src/pipeline/monitor.py"],
-      "description": "Add real-time or near-real-time data feeds. Build a monitoring pipeline that continuously watches positions and triggers re-evaluation when market conditions change.",
-      "key_concepts": [
-        "WebSocket or polling-based data feeds",
-        "Event-driven agent triggers",
-        "Position monitoring with stop-loss/take-profit alerts",
-        "Dashboard integration"
-      ]
+      "description": "Real-time data feeds and a monitoring pipeline that re-evaluates positions when market conditions change.",
+      "deferred_reason": "Requires always-on infrastructure and paid data feeds; incompatible with the free-tier, run-on-demand design being launched."
+    },
+    {
+      "title": "Finish stubbed agent capabilities",
+      "files": ["src/agents/alternative_data.py", "src/tools/analysis/risk_metrics.py"],
+      "description": "Sentiment/shipping data for Alternative Data agent; stress testing for Risk Manager (both stubbed in Phase 1).",
+      "deferred_reason": "Partial agents are honest and documented; completing them is incremental depth, not launch-blocking."
     }
   ]
 }
