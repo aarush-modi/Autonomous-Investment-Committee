@@ -1,9 +1,8 @@
+import pytest
+
 from src.reports.generator import ReportGenerator
 
-gen = ReportGenerator()
-
-# Hardcoded agent outputs simulating a real committee run
-agent_outputs = {
+AGENT_OUTPUTS = {
     "Market Data": """Ticker: NVDA
 Price: $142.50
 Volume: 312,000,000
@@ -57,10 +56,10 @@ Max Drawdown: -28.5%
 Insider Transactions for NVDA:
   2025-02-15 | Jensen Huang | Sale | 100,000 shares
   2025-01-20 | Colette Kress | Sale | 50,000 shares
-  Note: Insider selling is part of pre-planned 10b5-1 trading plans"""
+  Note: Insider selling is part of pre-planned 10b5-1 trading plans""",
 }
 
-chair_synthesis = """**Thesis**: NVIDIA is well-positioned as the dominant AI infrastructure provider, with explosive data center revenue growth validating the investment hypothesis.
+CHAIR_SYNTHESIS = """**Thesis**: NVIDIA is well-positioned as the dominant AI infrastructure provider, with explosive data center revenue growth validating the investment hypothesis.
 
 **Evidence**:
 - Revenue grew 126% YoY with data center up 217%, confirming AI demand thesis
@@ -79,19 +78,44 @@ chair_synthesis = """**Thesis**: NVIDIA is well-positioned as the dominant AI in
 - Conviction level: Medium
 - Reasoning: While fundamentals are exceptional with 126% revenue growth and expanding margins, the stock has already appreciated 180% and trades at elevated multiples. The high beta (2.85) and significant max drawdown (-28.5%) suggest the risk/reward is more balanced at current levels. New positions should wait for a pullback to improve entry price."""
 
-# Generate the HTML report
-report = gen.generate_committee_decision(
-    ticker="NVDA",
-    hypothesis="Evaluate NVDA as a long position given AI infrastructure demand growth",
-    agent_outputs=agent_outputs,
-    chair_synthesis=chair_synthesis,
-    recommendation="Hold",
-    conviction="Medium",
-    reasoning="While fundamentals are exceptional with 126% revenue growth and expanding margins, the stock has already appreciated 180% and trades at elevated multiples. The high beta (2.85) and significant max drawdown (-28.5%) suggest the risk/reward is more balanced at current levels.",
-)
 
-# Save to data/reports
-output_path = "data/reports/nvda_test_report.html"
-gen.save(report, output_path)
-print(f"Report saved to {output_path}")
-print("Open it with: open data/reports/nvda_test_report.html")
+@pytest.fixture
+def committee_decision_report():
+    gen = ReportGenerator()
+    return gen.generate_committee_decision(
+        ticker="NVDA",
+        hypothesis="Evaluate NVDA as a long position given AI infrastructure demand growth",
+        agent_outputs=AGENT_OUTPUTS,
+        chair_synthesis=CHAIR_SYNTHESIS,
+        recommendation="Hold",
+        conviction="Medium",
+        reasoning=(
+            "While fundamentals are exceptional with 126% revenue growth and expanding margins, "
+            "the stock has already appreciated 180% and trades at elevated multiples. The high beta "
+            "(2.85) and significant max drawdown (-28.5%) suggest the risk/reward is more balanced "
+            "at current levels."
+        ),
+    )
+
+
+class TestCommitteeDecisionReport:
+    def test_includes_ticker_and_hypothesis(self, committee_decision_report):
+        assert "NVDA" in committee_decision_report
+        assert "AI infrastructure demand growth" in committee_decision_report
+
+    def test_includes_every_agent_section(self, committee_decision_report):
+        for agent_name in AGENT_OUTPUTS:
+            assert agent_name in committee_decision_report
+
+    def test_includes_recommendation_and_conviction(self, committee_decision_report):
+        assert "Hold" in committee_decision_report
+        assert "Medium" in committee_decision_report
+
+    def test_saves_to_disk(self, committee_decision_report, tmp_path):
+        gen = ReportGenerator()
+        output_path = tmp_path / "reports" / "nvda_test_report.html"
+
+        gen.save(committee_decision_report, str(output_path))
+
+        assert output_path.exists()
+        assert output_path.read_text() == committee_decision_report

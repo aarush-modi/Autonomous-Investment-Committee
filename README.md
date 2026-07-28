@@ -106,29 +106,19 @@ python3 scripts/ingest_filings.py --ticker AAPL --filing-type 10-K --limit 3
 
 ## Testing
 
+The suite is `pytest`-based. Agent tests mock the Anthropic client (via `conftest.py`), so no API keys or network access are required for the default run:
+
 ```bash
 source venv/bin/activate
+pip install pytest pytest-asyncio
 
-# Test core framework (no API key needed)
-python3 test_core.py
+pytest
+```
 
-# Test data layer (no API key needed, uses free Yahoo Finance)
-python3 test_data.py
+A handful of RAG tests (`test_rag.py`) exercise the real `sentence-transformers` embedding model and a local ChromaDB store; they're marked `integration` and download model weights on first run. Skip them for a fast, fully offline run:
 
-# Test RAG system (no API key needed, runs locally)
-python3 test_rag.py
-
-# Test report generation (no API key needed)
-python3 test_reports.py
-
-# Test Market Data agent (needs ANTHROPIC_API_KEY)
-python3 test_market_agent.py
-
-# Test Quant, Risk, and Alt Data agents (needs ANTHROPIC_API_KEY + FRED_API_KEY)
-python3 test_agents.py
-
-# Test full Committee Chair orchestration (needs ANTHROPIC_API_KEY + FRED_API_KEY)
-python3 test_chair.py
+```bash
+pytest -m "not integration"
 ```
 
 ## Tech Stack
