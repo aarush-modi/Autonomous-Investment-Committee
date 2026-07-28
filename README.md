@@ -2,6 +2,11 @@
 
 Multi-agent system that simulates a professional investment board. Specialized AI agents collaborate to ingest market data, analyze investments, and produce structured research reports with Buy/Sell/Hold recommendations.
 
+!!THIS IS NOT INVESTMENT ADVICE!!
+!!THIS IS A PERSONAL PROJECT!!
+
+This project is not finished (clearly). It is also severly behind schedule because I underestimated how tired I would be after my co-op.
+
 ## Usage
 
 ```bash
