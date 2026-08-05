@@ -41,3 +41,7 @@ class Cache:
     def clear(self):
         self.conn.execute("DELETE FROM cache")
         self.conn.commit()
+
+#Sinbgleton instance of cache
+_cache = Cache("cache.db")
+
