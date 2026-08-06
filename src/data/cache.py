@@ -45,3 +45,19 @@ class Cache:
 #Sinbgleton instance of cache
 _cache = Cache("cache.db")
 
+def cached(key_prefix: str, ttl: int, model_name):
+    def decorator(func):
+        def wrapper(*args, **kwargs):
+            parts = [str(v) for v in kwargs.values()]
+            key = "_".join([key_prefix] + parts)
+
+            value = _cache.get(key)
+            if value != None:
+                return model_name.model_validate(value)
+            
+            result = func(*args, **kwargs)
+            _cache.set(key, result.model_dump(mode="json"), ttl)
+            return result
+        return wrapper
+    return decorator
+    
