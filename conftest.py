@@ -62,6 +62,14 @@ class FakeAnthropicClient:
         return item
 
 
+@pytest.fixture(autouse=True)
+def isolated_cache(monkeypatch, tmp_path):
+    """Give every test its own empty response cache, so tests never read or write the
+    real data/cache.db and a previously cached response can't mask a mocked provider."""
+    from src.data import cache
+    monkeypatch.setattr(cache, "_cache", cache.Cache(str(tmp_path / "cache.db")))
+
+
 @pytest.fixture
 def install_fake_anthropic(monkeypatch):
     """Patch BaseAgent's Anthropic client factory. Returns a function that takes a

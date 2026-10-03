@@ -9,6 +9,7 @@ class Settings:
     FRED_API_KEY: str = os.getenv("FRED_API_KEY", "")
     DEFAULT_MODEL: str = os.getenv("DEFAULT_MODEL", "claude-sonnet-5")
     CACHE_TTL: int = int(os.getenv("CACHE_TTL", "3600"))
+    CACHE_DB_PATH: str = os.getenv("CACHE_DB_PATH", "data/cache.db")
     VECTOR_STORE_DIR: str = os.getenv("VECTOR_STORE_DIR", "data/vectorstore")
 
 

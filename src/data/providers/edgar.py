@@ -5,9 +5,11 @@ from edgar import Company
 from datetime import date
 from src.data.providers.base import FilingsProvider
 from src.data.models import Filing, FinancialStatements
+from src.data.cache import cached
 
 
 class EdgarProvider(FilingsProvider):
+    @cached("filings", ttl=86400, model_name=list[Filing])
     def get_filings(self, ticker: str, filing_type: str, limit: int = 5) -> list[Filing]:
         company = Company(ticker)
         filings = company.get_filings(form=filing_type)
@@ -29,6 +31,7 @@ class EdgarProvider(FilingsProvider):
             ))
         return results
 
+    @cached("financials", ttl=86400, model_name=FinancialStatements)
     def get_financial_statements(self, ticker: str, period: str = "annual") -> FinancialStatements:
         company = Company(ticker)
         form = "10-K" if period == "annual" else "10-Q"
@@ -43,6 +46,7 @@ class EdgarProvider(FilingsProvider):
             period=period,
         )
 
+    @cached("filing_text", ttl=604800, model_name=str)
     def get_filing_text(self, ticker: str, filing_type: str) -> str:
         company = Company(ticker)
         filing = company.get_filings(form=filing_type).latest(1)

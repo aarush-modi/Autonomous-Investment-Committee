@@ -1,7 +1,9 @@
 import sqlite3
 import json
 import time
+import os
 import inspect
+import functools
 from pydantic import TypeAdapter
 
 
@@ -44,26 +46,38 @@ class Cache:
         self.conn.execute("DELETE FROM cache")
         self.conn.commit()
 
-#Sinbgleton instance of cache
-_cache = Cache("cache.db")
+#Singleton instance of cache, created on first use so importing this module has no side effects.
+#Tests can point it elsewhere by assigning cache._cache = Cache(tmp_path / "cache.db")
+_cache = None
+
+def get_cache() -> Cache:
+    global _cache
+    if _cache is None:
+        from config.settings import settings
+        os.makedirs(os.path.dirname(settings.CACHE_DB_PATH) or ".", exist_ok=True)
+        _cache = Cache(settings.CACHE_DB_PATH, settings.CACHE_TTL)
+    return _cache
 
 def cached(key_prefix: str, ttl: int, model_name):
     def decorator(func):
         sig = inspect.signature(func)
         adapter = TypeAdapter(model_name)
 
+        @functools.wraps(func)
         def wrapper(*args, **kwargs):
             bound = sig.bind(*args, **kwargs)
             bound.apply_defaults()
             parts = [str(v) for k, v in bound.arguments.items() if k != "self"]
             key = "_".join([key_prefix] + parts)
 
-            value = _cache.get(key)
-            if value != None:
+            value = get_cache().get(key)
+            if value is not None:
                 return adapter.validate_python(value)
-            
+
             result = func(*args, **kwargs)
-            _cache.set(key, adapter.dump_python(result, mode="json"), ttl)
+            #Don't cache empty responses ([], {}, "") — they're often transient provider failures
+            if result:
+                get_cache().set(key, adapter.dump_python(result, mode="json"), ttl)
             return result
         return wrapper
     return decorator
