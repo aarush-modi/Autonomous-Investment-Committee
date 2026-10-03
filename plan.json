@@ -3,8 +3,9 @@
   "description": "Multi-agent system simulating a professional investment board. Specialized AI agents collaborate to ingest market data, analyze investments, and produce structured research reports.",
   "launch": {
     "goal": "Public open-source release on GitHub",
-    "target_date": "2026-08-26",
-    "timeline": "8 weeks from 2026-07-01",
+    "target_date": "2026-11-16",
+    "original_target_date": "2026-08-26",
+    "timeline": "6 weeks from 2026-10-05 (rescheduled 2026-10-03: original 8-week plan from 2026-07-01 slipped during co-op; step 10 in progress, steps 11-13 not started)",
     "definition_of_done": [
       "Repo installable from a fresh clone: pip install -e . with pinned dependencies, no venv/ pip-list instructions",
       "LICENSE file and financial-disclaimer section in README (educational/research use, not investment advice)",
@@ -13,12 +14,13 @@
       "Graceful failure for every missing prerequisite: absent API key, empty vector store, rate-limited data provider"
     ],
     "weekly_schedule": {
-      "week_1": "Step 10 — cache integration",
-      "weeks_2_3": "Step 11 — packaging, pytest migration, CI",
-      "week_4": "Step 12 — robustness and first-run experience",
-      "week_5": "Step 13 — docs, sample reports, demo",
-      "weeks_6_7": "Step 14 — backtesting engine (stretch; cut without slipping launch)",
-      "week_8": "Buffer: fresh-clone dry run, launch checklist, publish"
+      "week_1 (2026-10-05 to 2026-10-11)": "Step 10 — finish cache integration: invalidation, thread safety, mark complete, push main",
+      "weeks_2_3 (2026-10-12 to 2026-10-25)": "Step 11 — packaging, pytest migration, CI",
+      "week_4 (2026-10-26 to 2026-11-01)": "Step 12 — robustness and first-run experience",
+      "week_5 (2026-11-02 to 2026-11-08)": "Step 13 — docs, sample reports, demo",
+      "week_6 (2026-11-09 to 2026-11-15)": "Buffer: fresh-clone dry run, launch checklist",
+      "launch (2026-11-16)": "Publish",
+      "post_launch": "Step 14 — backtesting engine (cut from launch scope on 2026-10-03)"
     }
   },
   "tech_stack": {
@@ -231,7 +233,7 @@
     "data_abstraction": "Abstract provider interfaces (MarketDataProvider, etc.) allow swapping free APIs for premium without changing agent code.",
     "agent_tool_loop": "BaseAgent runs: send messages → if stop_reason=='end_turn' return → else execute tool calls → append results → repeat.",
     "rag_strategy": "Section-aware chunking for SEC filings, ChromaDB with metadata filtering (ticker, filing_type, date), sentence-transformers for free local embeddings.",
-    "scaling_path": "Phase 2 (pre-launch): cache integration, packaging/tests/CI, robustness, docs — then backtesting as stretch. Phase 3 (post-launch): signal generation, portfolio construction, streaming data feeds."
+    "scaling_path": "Phase 2 (pre-launch): cache integration, packaging/tests/CI, robustness, docs. Backtesting (step 14) moved to post-launch. Phase 3 (post-launch): signal generation, portfolio construction, streaming data feeds."
   },
   "phase1_deliverable": {
     "command": "python scripts/run_committee.py --ticker NVDA --hypothesis \"Evaluate NVDA as a long position given AI infrastructure demand growth\" --output data/reports/nvda_analysis.md",
@@ -308,11 +310,11 @@
     },
     {
       "step": 14,
-      "title": "Backtesting Engine (stretch)",
+      "title": "Backtesting Engine (post-launch)",
       "status": "pending",
-      "priority": "stretch — cut before slipping the launch date",
+      "priority": "post-launch — cut from launch scope on 2026-10-03 after the schedule slipped",
       "files": ["src/tools/analysis/backtesting.py", "src/agents/quant_analyst.py"],
-      "description": "Complete the stubbed backtesting engine as the one pre-launch feature differentiator: test simple entry/exit strategies against historical data, integrated as a Quant Analyst tool. Only start after steps 10–13 are done; weeks 6–7 of the schedule with week 8 held as buffer.",
+      "description": "Complete the stubbed backtesting engine as the one pre-launch feature differentiator: test simple entry/exit strategies against historical data, integrated as a Quant Analyst tool. Deferred until after the 2026-11-16 launch; steps 10–13 take priority.",
       "key_concepts": [
         "Strategy definition (entry/exit rules)",
         "Historical simulation with transaction costs",
