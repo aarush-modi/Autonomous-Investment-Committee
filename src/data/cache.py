@@ -1,6 +1,7 @@
 import sqlite3
 import json
 import time
+import inspect
 
 
 class Cache:
@@ -47,8 +48,12 @@ _cache = Cache("cache.db")
 
 def cached(key_prefix: str, ttl: int, model_name):
     def decorator(func):
+        sig = inspect.signature(func)
+
         def wrapper(*args, **kwargs):
-            parts = [str(v) for v in kwargs.values()]
+            bound = sig.bind(*args, **kwargs)
+            bound.apply_defaults()
+            parts = [str(v) for k, v in bound.arguments.items() if k != "self"]
             key = "_".join([key_prefix] + parts)
 
             value = _cache.get(key)
