@@ -2,6 +2,7 @@ import sqlite3
 import json
 import time
 import inspect
+from pydantic import TypeAdapter
 
 
 class Cache:
@@ -49,6 +50,7 @@ _cache = Cache("cache.db")
 def cached(key_prefix: str, ttl: int, model_name):
     def decorator(func):
         sig = inspect.signature(func)
+        adapter = TypeAdapter(model_name)
 
         def wrapper(*args, **kwargs):
             bound = sig.bind(*args, **kwargs)
@@ -58,10 +60,10 @@ def cached(key_prefix: str, ttl: int, model_name):
 
             value = _cache.get(key)
             if value != None:
-                return model_name.model_validate(value)
+                return adapter.validate_python(value)
             
             result = func(*args, **kwargs)
-            _cache.set(key, result.model_dump(mode="json"), ttl)
+            _cache.set(key, adapter.dump_python(result, mode="json"), ttl)
             return result
         return wrapper
     return decorator
