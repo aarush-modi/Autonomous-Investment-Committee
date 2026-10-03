@@ -14,9 +14,9 @@
       "Graceful failure for every missing prerequisite: absent API key, empty vector store, rate-limited data provider"
     ],
     "weekly_schedule": {
-      "week_1 (2026-10-05 to 2026-10-11)": "Step 10 — finish cache integration: invalidation, thread safety, mark complete, push main",
+      "week_1 (2026-10-05 to 2026-10-11)": "Step 10 complete 2026-10-03 (leftovers moved to step 12) — start step 11 early: pyproject.toml",
       "weeks_2_3 (2026-10-12 to 2026-10-25)": "Step 11 — packaging, pytest migration, CI",
-      "week_4 (2026-10-26 to 2026-11-01)": "Step 12 — robustness and first-run experience",
+      "week_4 (2026-10-26 to 2026-11-01)": "Step 12 — robustness and first-run experience, plus deferred cache work",
       "week_5 (2026-11-02 to 2026-11-08)": "Step 13 — docs, sample reports, demo",
       "week_6 (2026-11-09 to 2026-11-15)": "Buffer: fresh-clone dry run, launch checklist",
       "launch (2026-11-16)": "Publish",
@@ -256,10 +256,12 @@
     {
       "step": 10,
       "title": "Cache Integration",
-      "status": "pending",
+      "status": "complete",
+      "completed_date": "2026-10-03",
       "priority": "launch-blocking",
-      "files": ["src/data/providers/yahoo.py", "src/data/providers/fred.py", "src/data/providers/edgar.py", "src/data/cache.py"],
+      "files": ["src/data/providers/yahoo.py", "src/data/providers/fred.py", "src/data/providers/edgar.py", "src/data/cache.py", "config/settings.py", "conftest.py"],
       "description": "Wire the existing SQLite cache into all data providers. Cache API responses with configurable TTL to reduce latency and respect rate limits.",
+      "deferred_to_step_12": "Prefix invalidation (Cache.delete(prefix)), --no-cache CLI flag, thread safety, and purging expired rows on open were deferred to step 12; none block step 11.",
       "key_concepts": [
         "Decorator-based caching for provider methods",
         "Configurable TTL per data type (quotes shorter, filings longer)",
@@ -285,13 +287,16 @@
       "title": "Robustness & First-Run Experience",
       "status": "pending",
       "priority": "launch-blocking",
-      "files": ["config/settings.py", "src/core/agent.py", "src/data/providers/yahoo.py", "src/data/providers/fred.py", "src/data/providers/edgar.py", "scripts/run_committee.py"],
-      "description": "A public user's first run must not end in a stack trace. Validate API keys at startup with actionable error messages, handle provider rate limits and network failures with retry/backoff, degrade gracefully when the vector store is empty (Research Analyst should say so, not crash), and add per-run cost estimation/ceiling so strangers don't get surprise API bills.",
+      "files": ["config/settings.py", "src/core/agent.py", "src/data/providers/yahoo.py", "src/data/providers/fred.py", "src/data/providers/edgar.py", "src/data/cache.py", "scripts/run_committee.py"],
+      "description": "A public user's first run must not end in a stack trace. Validate API keys at startup with actionable error messages, handle provider rate limits and network failures with retry/backoff, degrade gracefully when the vector store is empty (Research Analyst should say so, not crash), and add per-run cost estimation/ceiling so strangers don't get surprise API bills. Also finish the cache work deferred from step 10: make the cache thread-safe, add prefix invalidation and a --no-cache flag, and purge expired rows on open.",
       "key_concepts": [
         "Fail fast at startup: check ANTHROPIC_API_KEY / FRED_API_KEY before spending tokens",
         "tenacity-style retry with exponential backoff on 429/5xx from data providers",
         "Empty-knowledge-base fallback path for search_knowledge_base",
-        "Token/cost budget per committee session, printed at end of run"
+        "Token/cost budget per committee session, printed at end of run",
+        "Cache thread safety (check_same_thread=False + threading.Lock) — required before sync tools move to asyncio.to_thread",
+        "Cache.delete(prefix) using substr() rather than LIKE (keys contain '_', a LIKE wildcard); --no-cache skips reads but still writes fresh results",
+        "Purge expired rows when the cache opens so cache.db doesn't grow unbounded"
       ]
     },
     {
