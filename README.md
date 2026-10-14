@@ -8,15 +8,6 @@ Multi-agent system that simulates a professional investment board. Specialized A
 !!THIS IS A PERSONAL PROJECT!!
 
 
-## Usage
-
-```bash
-source venv/bin/activate
-python3 scripts/run_committee.py --ticker NVDA --hypothesis "Evaluate NVDA as a long position given AI infrastructure demand growth"
-```
-
-Output is saved to `data/reports/<ticker>_analysis.html`.
-
 ## Architecture
 
 The system uses the Anthropic Claude API to power specialized agents, each with their own tools and expertise. The Committee Chair dynamically decides which agents to consult based on the hypothesis — no hard-coded pipeline.
@@ -74,33 +65,51 @@ src/
 │   └── templates/
 │       ├── investment_memo.md
 │       ├── risk_report.md
+│       ├── committee_decision.md
 │       └── committee_decision.html
 ├── pipeline/
 │   ├── hypothesis.py         # Investment hypothesis validation
 │   └── runner.py             # Full pipeline: hypothesis → Chair → report
 config/
 ├── settings.py               # Loads .env for API keys and config
-├── agents.yaml               # Per-agent config (model, temperature, max_tokens)
+├── agents.yaml               # Per-agent config reference (not yet loaded; models are set in each agent file)
 └── prompts/                  # System prompts per agent (markdown files)
 scripts/
 ├── run_committee.py          # CLI entry point
 └── ingest_filings.py         # Bulk SEC filing ingestion into RAG
+tests/                        # pytest suite (Anthropic client mocked, runs offline)
+.github/workflows/ci.yml      # GitHub Actions: ruff + pytest on push/PR
+pyproject.toml                # Package metadata, pinned dependencies, ruff/pytest config
+LICENSE                       # MIT
 ```
 
 ## Setup
 
+Requires Python 3.13+.
+
 ```bash
-python3 -m venv venv
+python3.13 -m venv venv
 source venv/bin/activate
-pip install anthropic pydantic yfinance fredapi pandas numpy scipy chromadb sentence-transformers edgartools python-dotenv jinja2
+pip install -e ".[dev]"
 ```
 
-Create a `.env` file with your API keys:
+Copy the example environment file and fill in your API keys:
 
+```bash
+cp .env.example .env
 ```
-ANTHROPIC_API_KEY=your-key-here
-FRED_API_KEY=your-key-here
+
+`ANTHROPIC_API_KEY` and `FRED_API_KEY` are required. The other settings (cache TTL and location, vector store directory) have working defaults.
+
+## Usage
+
+Run from the project root (agent prompts are loaded via paths relative to it):
+
+```bash
+python3 scripts/run_committee.py --ticker NVDA --hypothesis "Evaluate NVDA as a long position given AI infrastructure demand growth"
 ```
+
+Output is saved to `data/reports/<ticker>_analysis.html`.
 
 ## Ingesting SEC Filings
 
@@ -112,20 +121,19 @@ python3 scripts/ingest_filings.py --ticker AAPL --filing-type 10-K --limit 3
 
 ## Testing
 
-The suite is `pytest`-based. Agent tests mock the Anthropic client (via `conftest.py`), so no API keys or network access are required for the default run:
+The suite is `pytest`-based and lives in `tests/`. Agent tests mock the Anthropic client (via `tests/conftest.py`), so no API keys are required. `pytest` and `pytest-asyncio` are installed by the `dev` extra:
 
 ```bash
-source venv/bin/activate
-pip install pytest pytest-asyncio
-
 pytest
 ```
 
-A handful of RAG tests (`test_rag.py`) exercise the real `sentence-transformers` embedding model and a local ChromaDB store; they're marked `integration` and download model weights on first run. Skip them for a fast, fully offline run:
+A handful of RAG tests (`tests/test_rag.py`) exercise the real `sentence-transformers` embedding model and a local ChromaDB store; they're marked `integration` and download model weights on first run. Skip them for a fast, fully offline run:
 
 ```bash
 pytest -m "not integration"
 ```
+
+This offline run is what CI executes on every push and pull request, along with `ruff check .`.
 
 ## Tech Stack
 
@@ -138,3 +146,7 @@ pytest -m "not integration"
 - **RAG**: ChromaDB + sentence-transformers
 - **Analysis**: NumPy, SciPy, Pandas
 - **Reports**: Jinja2 templates
+
+## License
+
+MIT, see [LICENSE](LICENSE).
