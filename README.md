@@ -1,5 +1,7 @@
 # Autonomous Investment Committee
 
+[![CI](https://github.com/aarush-modi/Autonomous-Investment-Committee/actions/workflows/ci.yml/badge.svg)](https://github.com/aarush-modi/Autonomous-Investment-Committee/actions/workflows/ci.yml)
+
 Multi-agent system that simulates a professional investment board. Specialized AI agents collaborate to ingest market data, analyze investments, and produce structured research reports with Buy/Sell/Hold recommendations.
 
 !!THIS IS NOT INVESTMENT ADVICE!!
