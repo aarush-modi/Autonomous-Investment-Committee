@@ -1,6 +1,5 @@
 from src.core.agent import BaseAgent
-from src.tools.analysis.statistics import calculate_returns, calculate_correlations, run_regression
-
+from src.tools.analysis.statistics import calculate_correlations, calculate_returns, run_regression
 
 SYSTEM_PROMPT = open("config/prompts/quant_analyst_agent.md").read()
 

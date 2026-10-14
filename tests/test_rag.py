@@ -87,8 +87,8 @@ class TestVectorStore:
 @pytest.mark.integration
 class TestIngestionPipeline:
     def test_ingest_chunks_and_stores_them(self, tmp_path):
-        from src.rag.store import VectorStore
         from src.rag.ingest import IngestionPipeline
+        from src.rag.store import VectorStore
 
         store = VectorStore(persist_dir=str(tmp_path / "vectorstore"), collection_name="test")
         pipeline = IngestionPipeline(store=store)

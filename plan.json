@@ -114,9 +114,9 @@
     "scripts/run_committee.py": "CLI entry point — runs full pipeline",
     "scripts/ingest_filings.py": "Bulk SEC filing ingestion into RAG",
     "tests/": "pytest suite (migrated from root-level test_*.py scripts); Anthropic client mocked so tests run offline",
-    "pyproject.toml": "Package metadata + pinned dependencies (NOT YET CREATED — listed as complete in steps 2/8 but missing from repo)",
-    "LICENSE": "MIT license (NOT YET CREATED)",
-    ".github/workflows/ci.yml": "GitHub Actions: ruff + pytest on push/PR (NOT YET CREATED)",
+    "pyproject.toml": "Package metadata + pinned dependencies",
+    "LICENSE": "MIT license",
+    ".github/workflows/ci.yml": "GitHub Actions: ruff + pytest on push/PR",
     "examples/": "Committed sample reports so visitors see output without spending API credits (NOT YET CREATED)"
   },
   "implementation_steps": [
@@ -271,7 +271,7 @@
     {
       "step": 11,
       "title": "Packaging, Test Suite & CI",
-      "status": "pending",
+      "status": "complete",
       "priority": "launch-blocking",
       "files": ["pyproject.toml", "LICENSE", "tests/", ".github/workflows/ci.yml", "README.md"],
       "description": "Create pyproject.toml with pinned dependencies (it was listed in steps 2 and 8 but never actually created — the project currently has no dependency manifest at all). Add MIT LICENSE. Migrate the eight root-level test_*.py scripts into a tests/ pytest suite that runs offline by mocking the Anthropic client and stubbing provider network calls. Wire up GitHub Actions running ruff + pytest on every push.",

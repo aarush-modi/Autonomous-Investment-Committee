@@ -1,5 +1,6 @@
 #Pydantic library creates data classes with auto validation so it does type enforcement for you
-from pydantic import BaseModel 
+from pydantic import BaseModel
+
 
 #What gets sent to an agent
 class AgentMessage(BaseModel): 

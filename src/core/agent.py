@@ -1,7 +1,10 @@
 import asyncio
 import inspect
-from anthropic import AsyncAnthropic, RateLimitError, APIStatusError
+
+from anthropic import APIStatusError, AsyncAnthropic, RateLimitError
+
 from src.core.message import AgentMessage, AgentResult
+
 
 #This is the base class all agents should inherit from because it manages the tool-use loop
 class BaseAgent:
@@ -57,8 +60,8 @@ class BaseAgent:
                     msg = getattr(e, "message", "") or str(e)
                     if "credit balance" in msg.lower() or "billing" in msg.lower():
                         print(f"\n  [{self.name}] Anthropic API credit balance too low — cannot complete this agent's work.")
-                        print(f"  Add credits at https://console.anthropic.com/settings/billing")
-                        print(f"  Returning gracefully so partial committee output is preserved.\n")
+                        print("  Add credits at https://console.anthropic.com/settings/billing")
+                        print("  Returning gracefully so partial committee output is preserved.\n")
                         return AgentResult(
                             agent_name=self.name,
                             content=f"[{self.name} could not complete: Anthropic API credit balance too low. Other agents' findings should still inform the recommendation.]",

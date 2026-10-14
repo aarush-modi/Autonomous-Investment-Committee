@@ -3,8 +3,8 @@ from datetime import date, datetime
 import pandas as pd
 import pytest
 
-from src.data.models import Quote, OHLCV, FinancialStatements, Filing
 from src.data.cache import Cache
+from src.data.models import OHLCV, Filing, FinancialStatements, Quote
 from src.data.providers.yahoo import YahooFinanceProvider
 
 

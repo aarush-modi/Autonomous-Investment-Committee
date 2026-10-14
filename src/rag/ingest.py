@@ -1,5 +1,5 @@
-from src.rag.store import VectorStore
 from src.rag.chunking import chunk_sec_filing
+from src.rag.store import VectorStore
 
 
 class IngestionPipeline:

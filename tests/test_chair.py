@@ -1,10 +1,10 @@
 import pytest
+from conftest import end_turn_response
 
-from src.core.message import AgentMessage, AgentResult
-from src.core.orchestrator import CommitteeOrchestrator
 from src.agents import committee_chair
 from src.agents.committee_chair import CommitteeChairAgent, delegate_to_agent
-from conftest import end_turn_response
+from src.core.message import AgentMessage, AgentResult
+from src.core.orchestrator import CommitteeOrchestrator
 
 
 @pytest.fixture(autouse=True)

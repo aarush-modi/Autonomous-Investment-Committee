@@ -1,7 +1,6 @@
 from src.core.agent import BaseAgent
-from src.tools.research.sec_edgar import search_sec_filings, get_financial_statements
+from src.tools.research.sec_edgar import get_financial_statements, search_sec_filings
 from src.tools.research.vector_search import search_knowledge_base
-
 
 SYSTEM_PROMPT = open("config/prompts/research_analyst_agent.md").read()
 

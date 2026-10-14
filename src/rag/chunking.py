@@ -1,6 +1,5 @@
 import re
 
-
 SEC_SECTION_PATTERN = re.compile(
     r"(?=Item\s+\d+[A-Za-z]?[\.\:\-\s])", re.IGNORECASE
 )

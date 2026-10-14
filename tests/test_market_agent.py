@@ -1,9 +1,10 @@
 from datetime import datetime
 
+from conftest import end_turn_response, tool_use_response
+
 from src.agents.market_data import MarketDataAgent
 from src.core.message import AgentMessage
 from src.data.models import Quote
-from conftest import end_turn_response, tool_use_response
 
 
 class TestMarketDataAgent:

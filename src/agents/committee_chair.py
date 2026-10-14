@@ -1,13 +1,11 @@
-from src.core.agent import BaseAgent
-from src.core.tool import tool
-from src.core.message import AgentMessage
-
-from src.agents.market_data import MarketDataAgent
-from src.agents.research_analyst import ResearchAnalystAgent
 from src.agents.alternative_data import AlternativeDataAgent
+from src.agents.market_data import MarketDataAgent
 from src.agents.quant_analyst import QuantAnalystAgent
+from src.agents.research_analyst import ResearchAnalystAgent
 from src.agents.risk_manager import RiskManagerAgent
-
+from src.core.agent import BaseAgent
+from src.core.message import AgentMessage
+from src.core.tool import tool
 
 SYSTEM_PROMPT = open("config/prompts/committee_chair_agent.md").read()
 

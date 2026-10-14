@@ -1,8 +1,10 @@
-import yfinance as yf
 from datetime import date, datetime
-from src.data.providers.base import MarketDataProvider
-from src.data.models import Quote, OHLCV
+
+import yfinance as yf
+
 from src.data.cache import cached
+from src.data.models import OHLCV, Quote
+from src.data.providers.base import MarketDataProvider
 
 
 class YahooFinanceProvider(MarketDataProvider):

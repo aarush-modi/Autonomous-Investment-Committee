@@ -1,8 +1,10 @@
 import os
-from fredapi import Fred
 from datetime import date
-from src.data.providers.base import EconomicDataProvider
+
+from fredapi import Fred
+
 from src.data.cache import cached
+from src.data.providers.base import EconomicDataProvider
 
 
 class FredProvider(EconomicDataProvider):
