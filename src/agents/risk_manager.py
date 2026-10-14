@@ -1,6 +1,5 @@
 from src.core.agent import BaseAgent
-from src.tools.analysis.risk_metrics import calculate_var, calculate_sharpe_ratio, calculate_max_drawdown
-
+from src.tools.analysis.risk_metrics import calculate_max_drawdown, calculate_sharpe_ratio, calculate_var
 
 SYSTEM_PROMPT = open("config/prompts/risk_manager_agent.md").read()
 

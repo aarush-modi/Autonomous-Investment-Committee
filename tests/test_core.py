@@ -1,9 +1,9 @@
 import pytest
+from conftest import end_turn_response, make_rate_limit_error, max_tokens_response, tool_use_response
 
-from src.core.tool import tool
-from src.core.message import AgentMessage, AgentResult
 from src.core.agent import BaseAgent
-from conftest import end_turn_response, tool_use_response, max_tokens_response, make_rate_limit_error
+from src.core.message import AgentMessage, AgentResult
+from src.core.tool import tool
 
 
 @tool("Adds two numbers")

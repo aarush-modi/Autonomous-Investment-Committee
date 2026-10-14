@@ -1,9 +1,10 @@
+from datetime import date, timedelta
+
 import numpy as np
-import pandas as pd
 from scipy import stats
+
 from src.core.tool import tool
 from src.data.providers.yahoo import YahooFinanceProvider
-from datetime import date, timedelta
 
 provider = YahooFinanceProvider()
 
@@ -43,7 +44,7 @@ def calculate_correlations(ticker1: str, ticker2: str, period_days: int) -> str:
     bars2 = provider.get_historical(ticker2, start, end)
 
     if len(bars1) < 2 or len(bars2) < 2:
-        return f"Not enough data to calculate correlation"
+        return "Not enough data to calculate correlation"
 
     # Align by date
     dates1 = {b.date: b.close for b in bars1}

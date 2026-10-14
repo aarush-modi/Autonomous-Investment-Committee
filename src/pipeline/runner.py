@@ -1,11 +1,12 @@
 import re
 
 from dotenv import load_dotenv
+
 load_dotenv()
 
-from src.pipeline.hypothesis import InvestmentHypothesis
-from src.core.orchestrator import CommitteeOrchestrator
-from src.reports.generator import ReportGenerator
+from src.core.orchestrator import CommitteeOrchestrator  # noqa: E402
+from src.pipeline.hypothesis import InvestmentHypothesis  # noqa: E402
+from src.reports.generator import ReportGenerator  # noqa: E402
 
 
 def _parse_decision(text: str) -> dict:

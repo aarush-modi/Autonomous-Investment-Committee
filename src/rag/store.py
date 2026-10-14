@@ -1,4 +1,5 @@
 import chromadb
+
 from src.rag.embeddings import EmbeddingGenerator
 
 

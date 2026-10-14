@@ -1,8 +1,10 @@
+from datetime import date, timedelta
+
 import numpy as np
 from scipy import stats
+
 from src.core.tool import tool
 from src.data.providers.yahoo import YahooFinanceProvider
-from datetime import date, timedelta
 
 provider = YahooFinanceProvider()
 

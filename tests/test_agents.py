@@ -1,8 +1,9 @@
-from src.core.message import AgentMessage
+from conftest import end_turn_response
+
+from src.agents.alternative_data import AlternativeDataAgent
 from src.agents.quant_analyst import QuantAnalystAgent
 from src.agents.risk_manager import RiskManagerAgent
-from src.agents.alternative_data import AlternativeDataAgent
-from conftest import end_turn_response
+from src.core.message import AgentMessage
 
 
 class TestQuantAnalystAgent:

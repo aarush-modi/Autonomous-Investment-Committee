@@ -3,7 +3,6 @@ import asyncio
 
 from src.pipeline.runner import run_committee
 
-
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Autonomous Investment Committee")
     parser.add_argument("--ticker", required=True, help="Stock ticker (e.g. AAPL, NVDA)")

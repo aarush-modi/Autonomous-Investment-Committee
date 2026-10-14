@@ -1,12 +1,13 @@
-import edgar
-edgar.set_identity("AutonomousInvestmentCommittee research@example.com")
-
-from edgar import Company
 from datetime import date
-from src.data.providers.base import FilingsProvider
-from src.data.models import Filing, FinancialStatements
-from src.data.cache import cached
 
+import edgar
+from edgar import Company
+
+from src.data.cache import cached
+from src.data.models import Filing, FinancialStatements
+from src.data.providers.base import FilingsProvider
+
+edgar.set_identity("AutonomousInvestmentCommittee research@example.com")
 
 class EdgarProvider(FilingsProvider):
     @cached("filings", ttl=86400, model_name=list[Filing])

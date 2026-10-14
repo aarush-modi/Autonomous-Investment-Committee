@@ -1,4 +1,5 @@
 import argparse
+
 from src.data.providers.edgar import EdgarProvider
 from src.rag.ingest import IngestionPipeline
 

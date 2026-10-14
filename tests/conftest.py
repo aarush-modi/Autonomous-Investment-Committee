@@ -14,9 +14,10 @@ import os
 # real FRED calls, so a placeholder key is enough to satisfy the constructor.
 os.environ.setdefault("FRED_API_KEY", "test-fred-key")
 
+from types import SimpleNamespace
+
 import httpx
 import pytest
-from types import SimpleNamespace
 from anthropic import RateLimitError
 
 
