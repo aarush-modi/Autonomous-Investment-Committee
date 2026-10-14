@@ -1,6 +1,5 @@
 from src.core.agent import BaseAgent
-from src.tools.market.yahoo_finance import get_stock_price, get_historical_ohlcv, get_market_indices
-
+from src.tools.market.yahoo_finance import get_historical_ohlcv, get_market_indices, get_stock_price
 
 SYSTEM_PROMPT = open("config/prompts/market_data_agent.md").read()
 

@@ -1,6 +1,5 @@
 from src.core.agent import BaseAgent
-from src.tools.analysis.risk_metrics import calculate_var, calculate_sharpe_ratio, calculate_max_drawdown
-
+from src.tools.analysis.risk_metrics import calculate_max_drawdown, calculate_sharpe_ratio, calculate_var
 
 SYSTEM_PROMPT = open("config/prompts/risk_manager_agent.md").read()
 
@@ -12,6 +11,6 @@ class RiskManagerAgent(BaseAgent):
             system_prompt=SYSTEM_PROMPT,
             model="claude-haiku-4-5-20251001",
             tools=[calculate_var, calculate_sharpe_ratio, calculate_max_drawdown],
-            max_tokens=1024,
+            max_tokens=2048,
             temperature=0,
         )

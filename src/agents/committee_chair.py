@@ -1,13 +1,11 @@
-from src.core.agent import BaseAgent
-from src.core.tool import tool
-from src.core.message import AgentMessage
-
-from src.agents.market_data import MarketDataAgent
-from src.agents.research_analyst import ResearchAnalystAgent
 from src.agents.alternative_data import AlternativeDataAgent
+from src.agents.market_data import MarketDataAgent
 from src.agents.quant_analyst import QuantAnalystAgent
+from src.agents.research_analyst import ResearchAnalystAgent
 from src.agents.risk_manager import RiskManagerAgent
-
+from src.core.agent import BaseAgent
+from src.core.message import AgentMessage
+from src.core.tool import tool
 
 SYSTEM_PROMPT = open("config/prompts/committee_chair_agent.md").read()
 
@@ -24,12 +22,12 @@ agent_outputs = {}
 
 
 @tool("Delegates a query to a specialist agent. Agent names: Market Data, Research Analyst, Alternative Data, Quant Analyst, Risk Manager")
-def delegate_to_agent(agent_name: str, query: str) -> str:
+async def delegate_to_agent(agent_name: str, query: str) -> str:
     if agent_name not in AGENTS:
         return f"Unknown agent: {agent_name}. Available: {', '.join(AGENTS.keys())}"
 
     agent = AGENTS[agent_name]()
-    result = agent.run(AgentMessage(content=query, sender="Committee Chair"))
+    result = await agent.run(AgentMessage(content=query, sender="Committee Chair"))
     agent_outputs[agent_name] = result.content
     return f"[{agent_name}]:\n{result.content}"
 
@@ -39,7 +37,7 @@ class CommitteeChairAgent(BaseAgent):
         super().__init__(
             name="Committee Chair",
             system_prompt=SYSTEM_PROMPT,
-            model="claude-sonnet-4-20250514",
+            model="claude-sonnet-5",
             tools=[delegate_to_agent],
             max_tokens=4096,
             temperature=0,

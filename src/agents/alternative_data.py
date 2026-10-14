@@ -1,7 +1,6 @@
 from src.core.agent import BaseAgent
 from src.tools.market.fred import get_economic_indicators, get_insider_transactions
 
-
 SYSTEM_PROMPT = open("config/prompts/alt_data_agent.md").read()
 
 

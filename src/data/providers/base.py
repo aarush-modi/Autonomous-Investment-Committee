@@ -1,6 +1,7 @@
 from abc import ABC, abstractmethod
 from datetime import date
-from src.data.models import Quote, OHLCV, FinancialStatements, Filing
+
+from src.data.models import OHLCV, Filing, FinancialStatements, Quote
 
 
 class MarketDataProvider(ABC):

@@ -1,6 +1,7 @@
+from datetime import date
+
 from src.core.tool import tool
 from src.data.providers.yahoo import YahooFinanceProvider
-from datetime import date, timedelta
 
 provider = YahooFinanceProvider()
 

@@ -1,6 +1,9 @@
 import os
-from fredapi import Fred
 from datetime import date
+
+from fredapi import Fred
+
+from src.data.cache import cached
 from src.data.providers.base import EconomicDataProvider
 
 
@@ -11,6 +14,7 @@ class FredProvider(EconomicDataProvider):
             raise ValueError("FRED_API_KEY environment variable not set")
         self.client = Fred(api_key=api_key)
 
+    @cached("fred_series", ttl=86400, model_name=dict)
     def get_series(self, series_id: str, start: date, end: date) -> dict:
         data = self.client.get_series(series_id, observation_start=start, observation_end=end)
         return {

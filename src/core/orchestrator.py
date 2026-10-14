@@ -14,21 +14,21 @@ class CommitteeOrchestrator:
     def set_pipeline(self, agent_names: list[str]):
         self.pipeline = agent_names
 
-    def run(self, query: str) -> dict:
+    async def run(self, query: str) -> dict:
         results = []
         context = {}
         for agent_name in self.pipeline:
             agent = self.agents[agent_name]
             message = AgentMessage(content=query, sender="orchestrator", context=context)
-            result = agent.run(message)
+            result = await agent.run(message)
             results.append(result)
             context[agent_name] = result.content
         return self._aggregate_results(results)
 
-    def run_with_chair(self, hypothesis: str) -> dict:
+    async def run_with_chair(self, hypothesis: str) -> dict:
         from src.agents.committee_chair import CommitteeChairAgent
         chair = CommitteeChairAgent()
-        result = chair.run(AgentMessage(content=hypothesis, sender="user"))
+        result = await chair.run(AgentMessage(content=hypothesis, sender="user"))
         return {
             "recommendation": result.content,
             "agent_outputs": chair.get_agent_outputs(),

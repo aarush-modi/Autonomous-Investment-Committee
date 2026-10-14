@@ -1,5 +1,6 @@
 import os
-from datetime import datetime, date
+from datetime import date, datetime
+
 from jinja2 import Environment, FileSystemLoader
 
 

@@ -1,33 +1,32 @@
 # Autonomous Investment Committee
 
+[![CI](https://github.com/aarush-modi/Autonomous-Investment-Committee/actions/workflows/ci.yml/badge.svg)](https://github.com/aarush-modi/Autonomous-Investment-Committee/actions/workflows/ci.yml)
+
 Multi-agent system that simulates a professional investment board. Specialized AI agents collaborate to ingest market data, analyze investments, and produce structured research reports with Buy/Sell/Hold recommendations.
 
-## Usage
+!!THIS IS NOT INVESTMENT ADVICE!!
+!!THIS IS A PERSONAL PROJECT!!
 
-```bash
-source venv/bin/activate
-python3 scripts/run_committee.py --ticker NVDA --hypothesis "Evaluate NVDA as a long position given AI infrastructure demand growth"
-```
-
-Output is saved to `data/reports/<ticker>_analysis.md`.
 
 ## Architecture
 
 The system uses the Anthropic Claude API to power specialized agents, each with their own tools and expertise. The Committee Chair dynamically decides which agents to consult based on the hypothesis — no hard-coded pipeline.
 
-- **Committee Chair** — Orchestrates all agents, synthesizes final recommendation
-- **Market Data** — Fetches prices, volume, and indices via Yahoo Finance
-- **Research Analyst** — SEC filings, financial statements, RAG knowledge base search
-- **Alternative Data** — Economic indicators (FRED), insider transactions
-- **Quant Analyst** — Returns, correlations, regression analysis
-- **Risk Manager** — VaR, Sharpe ratio, max drawdown
+- **Committee Chair** (Sonnet) — Orchestrates all agents, synthesizes final recommendation
+- **Market Data** (Haiku) — Fetches prices, volume, and indices via Yahoo Finance
+- **Research Analyst** (Haiku) — SEC filings, financial statements, RAG knowledge base search
+- **Alternative Data** (Haiku) — Economic indicators (FRED), insider transactions
+- **Quant Analyst** (Haiku) — Returns, correlations, regression analysis
+- **Risk Manager** (Haiku) — VaR, Sharpe ratio, max drawdown
+
+Sub-agents run **concurrently** via `asyncio.gather` when the Chair issues multiple delegations in a single turn. The Chair's static prefix (system prompt + tools) and growing conversation history are both **prompt-cached** with a rolling 5-min ephemeral breakpoint, cutting per-call input tokens to ~10% on later iterations.
 
 ## Project Structure
 
 ```
 src/
 ├── core/
-│   ├── agent.py              # BaseAgent with Anthropic SDK tool-use loop
+│   ├── agent.py              # Async BaseAgent with Anthropic SDK tool-use loop, prompt caching, parallel tool execution
 │   ├── tool.py               # @tool decorator with auto schema generation
 │   ├── message.py            # AgentMessage and AgentResult models
 │   └── orchestrator.py       # CommitteeOrchestrator (pipeline + Chair mode)
@@ -66,33 +65,51 @@ src/
 │   └── templates/
 │       ├── investment_memo.md
 │       ├── risk_report.md
-│       └── committee_decision.md
+│       ├── committee_decision.md
+│       └── committee_decision.html
 ├── pipeline/
 │   ├── hypothesis.py         # Investment hypothesis validation
 │   └── runner.py             # Full pipeline: hypothesis → Chair → report
 config/
 ├── settings.py               # Loads .env for API keys and config
-├── agents.yaml               # Per-agent config (model, temperature, max_tokens)
+├── agents.yaml               # Per-agent config reference (not yet loaded; models are set in each agent file)
 └── prompts/                  # System prompts per agent (markdown files)
 scripts/
 ├── run_committee.py          # CLI entry point
 └── ingest_filings.py         # Bulk SEC filing ingestion into RAG
+tests/                        # pytest suite (Anthropic client mocked, runs offline)
+.github/workflows/ci.yml      # GitHub Actions: ruff + pytest on push/PR
+pyproject.toml                # Package metadata, pinned dependencies, ruff/pytest config
+LICENSE                       # MIT
 ```
 
 ## Setup
 
+Requires Python 3.13+.
+
 ```bash
-python3 -m venv venv
+python3.13 -m venv venv
 source venv/bin/activate
-pip install anthropic pydantic yfinance fredapi pandas numpy scipy chromadb sentence-transformers edgartools python-dotenv jinja2
+pip install -e ".[dev]"
 ```
 
-Create a `.env` file with your API keys:
+Copy the example environment file and fill in your API keys:
 
+```bash
+cp .env.example .env
 ```
-ANTHROPIC_API_KEY=your-key-here
-FRED_API_KEY=your-key-here
+
+`ANTHROPIC_API_KEY` and `FRED_API_KEY` are required. The other settings (cache TTL and location, vector store directory) have working defaults.
+
+## Usage
+
+Run from the project root (agent prompts are loaded via paths relative to it):
+
+```bash
+python3 scripts/run_committee.py --ticker NVDA --hypothesis "Evaluate NVDA as a long position given AI infrastructure demand growth"
 ```
+
+Output is saved to `data/reports/<ticker>_analysis.html`.
 
 ## Ingesting SEC Filings
 
@@ -104,37 +121,32 @@ python3 scripts/ingest_filings.py --ticker AAPL --filing-type 10-K --limit 3
 
 ## Testing
 
+The suite is `pytest`-based and lives in `tests/`. Agent tests mock the Anthropic client (via `tests/conftest.py`), so no API keys are required. `pytest` and `pytest-asyncio` are installed by the `dev` extra:
+
 ```bash
-source venv/bin/activate
-
-# Test core framework (no API key needed)
-python3 test_core.py
-
-# Test data layer (no API key needed, uses free Yahoo Finance)
-python3 test_data.py
-
-# Test RAG system (no API key needed, runs locally)
-python3 test_rag.py
-
-# Test report generation (no API key needed)
-python3 test_reports.py
-
-# Test Market Data agent (needs ANTHROPIC_API_KEY)
-python3 test_market_agent.py
-
-# Test Quant, Risk, and Alt Data agents (needs ANTHROPIC_API_KEY + FRED_API_KEY)
-python3 test_agents.py
-
-# Test full Committee Chair orchestration (needs ANTHROPIC_API_KEY + FRED_API_KEY)
-python3 test_chair.py
+pytest
 ```
+
+A handful of RAG tests (`tests/test_rag.py`) exercise the real `sentence-transformers` embedding model and a local ChromaDB store; they're marked `integration` and download model weights on first run. Skip them for a fast, fully offline run:
+
+```bash
+pytest -m "not integration"
+```
+
+This offline run is what CI executes on every push and pull request, along with `ruff check .`.
 
 ## Tech Stack
 
-- **LLM**: Anthropic Claude API
+- **LLM**: Anthropic Claude API (Sonnet for Chair synthesis, Haiku for sub-agents)
+- **Concurrency**: `asyncio` + `AsyncAnthropic` for parallel sub-agent execution
+- **Token efficiency**: Anthropic prompt caching (ephemeral, rolling conversation breakpoint)
 - **Data**: yfinance, FRED, SEC EDGAR (edgartools)
 - **Models**: Pydantic
 - **Cache**: SQLite
 - **RAG**: ChromaDB + sentence-transformers
 - **Analysis**: NumPy, SciPy, Pandas
 - **Reports**: Jinja2 templates
+
+## License
+
+MIT, see [LICENSE](LICENSE).

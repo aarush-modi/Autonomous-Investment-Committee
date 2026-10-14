@@ -1,6 +1,7 @@
+from datetime import date, timedelta
+
 from src.core.tool import tool
 from src.data.providers.fred import FredProvider
-from datetime import date, timedelta
 
 provider = FredProvider()
 
@@ -36,7 +37,7 @@ def get_economic_indicators(indicator: str) -> str:
         f"  Latest: {latest_val:.2f} ({latest_date})",
         f"  1Y ago: {first_val:.2f} ({first_date})",
         f"  Change: {change:+.2f}",
-        f"\nRecent values:",
+        "\nRecent values:",
     ]
     for d, v in values[-5:]:
         lines.append(f"  {d}: {v:.2f}")

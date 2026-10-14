@@ -1,10 +1,14 @@
-import yfinance as yf
 from datetime import date, datetime
+
+import yfinance as yf
+
+from src.data.cache import cached
+from src.data.models import OHLCV, Quote
 from src.data.providers.base import MarketDataProvider
-from src.data.models import Quote, OHLCV
 
 
 class YahooFinanceProvider(MarketDataProvider):
+    @cached("quote", ttl=300, model_name=Quote)
     def get_quote(self, ticker: str) -> Quote:
         stock = yf.Ticker(ticker)
         info = stock.info
@@ -22,6 +26,7 @@ class YahooFinanceProvider(MarketDataProvider):
             timestamp=datetime.now(),
         )
 
+    @cached("historical", ttl=3600, model_name=list[OHLCV])
     def get_historical(self, ticker: str, start: date, end: date) -> list[OHLCV]:
         stock = yf.Ticker(ticker)
         df = stock.history(start=start.isoformat(), end=end.isoformat())

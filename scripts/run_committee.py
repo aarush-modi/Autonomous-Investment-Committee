@@ -1,11 +1,7 @@
 import argparse
-import sys
-import os
-
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), ".."))
+import asyncio
 
 from src.pipeline.runner import run_committee
-
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run the Autonomous Investment Committee")
@@ -15,4 +11,4 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     output = args.output or f"data/reports/{args.ticker.lower()}_analysis.md"
-    run_committee(args.ticker, args.hypothesis, output)
+    asyncio.run(run_committee(args.ticker, args.hypothesis, output))
